@@ -15,6 +15,9 @@ def bottom_files(path,full_paths=True):
     all_paths.sort(key=natural_keys)        
     return all_paths
 
+def natural_sort(l):
+    return sorted(l,key=natural_keys)
+
 def natural_keys(text):
     return [ atoi(c) for c in re.split('(\d+)', text) ]
 
