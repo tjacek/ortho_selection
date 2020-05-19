@@ -1,6 +1,7 @@
 import os.path
 import numpy as np
-import files
+from sklearn import preprocessing
+import files,tools
 
 class FeatureSet(object):
     def __init__(self,X,info):
@@ -10,6 +11,28 @@ class FeatureSet(object):
     def __len__(self):
         return len(self.info)
 
+    def dim(self):
+        return self.X.shape[1]
+
+    def n_cats(self):
+        return len(set(self.get_labels()))
+
+    def get_labels(self):
+        return [ int(info_i.split('_')[0])-1 for info_i in self.info]
+
+    def to_dict(self):
+        return { self.info[i]:x_i 
+                    for i,x_i in enumerate(self.X)}
+
+    def split(self,selector=None):
+        feat_dict=self.to_dict()
+        train,test=tools.split(feat_dict,selector)
+        return from_dict(train),from_dict(test)
+
+    def norm(self):
+        self.X=preprocessing.scale(self.X)
+        return self
+        
 def read(in_path):
     if(not os.path.isdir(in_path)):
         return [from_dict(read_single(in_path))]
