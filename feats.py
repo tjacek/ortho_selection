@@ -27,12 +27,18 @@ class FeatureSet(object):
     def split(self,selector=None):
         feat_dict=self.to_dict()
         train,test=tools.split(feat_dict,selector)
-        return from_dict(train),from_dict(test)
+        return from_dict(train), from_dict(test)
 
     def norm(self):
         self.X=preprocessing.scale(self.X)
         return self
-        
+    
+    def binary(self,cat_i):
+        y=self.get_labels()
+        binary_y=[ "%d_%d"%(int(y_i==cat_i),i) 
+                        for i,y_i in enumerate(y)]
+        return FeatureSet(self.X,binary_y)
+
 def read(in_path):
     if(not os.path.isdir(in_path)):
         return [from_dict(read_single(in_path))]
