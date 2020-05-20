@@ -51,7 +51,7 @@ def from_dict(feat_dict):
                     for info_i in info])
     return FeatureSet(X,info)
 
-def read_single(in_path):
+def read_single(in_path,as_dict=True):
     lines=open(in_path,'r').readlines()
     feat_dict={}
     for line_i in lines:
@@ -60,4 +60,6 @@ def read_single(in_path):
             data_i,info_i=raw[0],raw[-1]
             info_i= files.clean_str(info_i)
             feat_dict[info_i]=np.fromstring(data_i,sep=',')
-    return feat_dict
+    if(as_dict):
+        return feat_dict
+    return from_dict(feat_dict)
