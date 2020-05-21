@@ -32,3 +32,9 @@ def clean_str(name_i):
     name_i=name_i.split("/")[-1]
     digits=[ str(int(digit_i)) for digit_i in re.findall(r'\d+',name_i)]
     return "_".join(digits)
+
+def ens_template(in_path,out_path,fun):
+    make_dir(out_path)
+    for path_i in top_files(in_path):
+        out_i="%s/%s" %(out_path,path_i.split("/")[-1])
+        fun(path_i,out_i)

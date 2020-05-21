@@ -24,10 +24,4 @@ def cat_histogram(in_path,out_path):
         result=mutual_info_classif(binary_i.X,binary_i.get_labels())
         make_plot(result,out_i)
 
-def ens_template(in_path,out_path,fun):
-    files.make_dir(out_path)
-    for path_i in files.top_files(in_path):
-        out_i="%s/%s" %(out_path,path_i.split("/")[-1])
-        fun(path_i,out_i)
-
-ens_template("../ens5/basic/feats","ens_basic",cat_histogram)
+files.ens_template("../ens5/basic/feats","ens_basic",cat_histogram)
