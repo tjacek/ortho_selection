@@ -1,5 +1,6 @@
 import os.path
 import numpy as np
+from sklearn.feature_selection import mutual_info_classif
 from sklearn import preprocessing
 import files,tools
 
@@ -38,6 +39,12 @@ class FeatureSet(object):
         binary_y=[ "%d_%d"%(int(y_i==cat_i),i) 
                         for i,y_i in enumerate(y)]
         return FeatureSet(self.X,binary_y)
+
+    def mutual(self):
+        return mutual_info_classif(self.X,self.get_labels())
+
+    def modify(self,new_X):
+        return FeatureSet(new_X,self.info)
 
 def read(in_path):
     if(not os.path.isdir(in_path)):
