@@ -33,4 +33,4 @@ def basic_select(data):
     print(new_feats.dim())
     return new_feats
 
-ens_compare("../ens5/sim/feats")
+ens_compare("../ens5/basic/feats")
