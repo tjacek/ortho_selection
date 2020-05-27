@@ -13,7 +13,9 @@ def ens_compare(in_path):
     print("%f,%f" % (old_acc,new_acc))
 
 def ensemble_exp(in_path):
-    datasets=feats.read(in_path)
+#    datasets=feats.read(in_path)
+    common_path='../proj2/stats/feats'
+    datasets=learn.combined_dataset(common_path,in_path)
     datasets=[basic_select(data_i) for data_i in datasets]
     acc=learn.ensemble_exp(datasets)
     print(acc)
@@ -33,4 +35,4 @@ def basic_select(data):
     print(new_feats.dim())
     return new_feats
 
-ens_compare("../ens5/basic/feats")
+ensemble_exp("../ens5/sim/feats")

@@ -9,6 +9,15 @@ class FeatureSet(object):
         self.X=X
         self.info=info
 
+    def __add__(self,feat_i):
+        new_info=self.common_names(feat_i)
+        new_info.sort()
+        feat1,feat2=self.to_dict(),feat_i.to_dict()
+        feat1={ name_i:feat1[name_i] for name_i in new_info}
+        feat2={ name_i:feat2[name_i] for name_i in new_info}
+        new_X=np.concatenate([from_dict(feat1).X,from_dict(feat2).X],axis=1)
+        return FeatureSet(new_X,new_info)
+
     def __len__(self):
         return len(self.info)
 
@@ -45,6 +54,9 @@ class FeatureSet(object):
 
     def modify(self,new_X):
         return FeatureSet(new_X,self.info)
+
+    def common_names(self,feat1):
+        return list(set(self.info).intersection(set(feat1.info)))
 
 def read(in_path):
     if(not os.path.isdir(in_path)):

@@ -7,7 +7,7 @@ def simple_exp(data):
     y_true,y_pred,names=train_model(data)
     return accuracy_score(y_true,y_pred)
 
-def train_model(data,binary=True,clf_type="SVC"):
+def train_model(data,binary=True,clf_type="LR"):
     if(type(data)==str):	
         data=feats.read(data)[0]
     data.norm()
@@ -33,6 +33,14 @@ def ensemble_exp(datasets,binary=True):
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
     return accuracy_score(y_true,y_pred)
+
+
+def combined_dataset(common_path,deep_path):
+    common_data=feats.read(common_path)[0]
+    deep_data=feats.read(deep_path)
+    datasets=[common_data+data_i 
+                for data_i in deep_data]
+    return datasets
 
 def to_one_hot(y):
     n_cats=max(y)+1
