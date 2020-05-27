@@ -13,7 +13,6 @@ def train_model(data, binary=True):
     data.norm()
     train,test=data.split()
     model=LogisticRegression(solver='liblinear')
-#    print(dir(model))
     model.fit(train.X,train.get_labels())
     y_true=test.get_labels()
     if(binary):
@@ -22,8 +21,9 @@ def train_model(data, binary=True):
         y_pred=model.predict_proba(test.X)
     return y_true,y_pred,data.info
 
-def ensemble_exp(in_path,binary=True):
-    datasets=feats.read(in_path)
+def ensemble_exp(datasets,binary=True):
+    if(type(datasets)==str):
+        datasets=feats.read(datasets)
     results=[train_model(data_i,binary) for data_i in datasets]
     y_true=results[0][0]
     if(binary):
@@ -32,7 +32,7 @@ def ensemble_exp(in_path,binary=True):
         votes=np.array([result_i[1] for result_i in results])
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
-    print(accuracy_score(y_true,y_pred))
+    return accuracy_score(y_true,y_pred)
 
 def to_one_hot(y):
     n_cats=max(y)+1
@@ -44,4 +44,4 @@ def to_one_hot(y):
     return np.array(one_hot)
 
 if __name__=="__main__":
-    ensemble_exp("../ens5/sim/feats",False)
+    printf(ensemble_exp("../ens5/sim/feats",False))
