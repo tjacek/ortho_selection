@@ -7,7 +7,7 @@ def simple_exp(data):
     y_true,y_pred,names=train_model(data)
     return accuracy_score(y_true,y_pred)
 
-def train_model(data,binary=True,clf_type="LR"):
+def train_model(data,binary=False,clf_type="LR"):
     if(type(data)==str):	
         data=feats.read(data)[0]
     data.norm()
@@ -21,10 +21,10 @@ def train_model(data,binary=True,clf_type="LR"):
         y_pred=model.predict_proba(test.X)
     return y_true,y_pred,data.info
 
-def ensemble_exp(datasets,binary=True):
+def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(type(datasets)==str):
         datasets=feats.read(datasets)
-    results=[train_model(data_i,binary) for data_i in datasets]
+    results=[train_model(data_i,binary,clf) for data_i in datasets]
     y_true=results[0][0]
     if(binary):
         votes=np.array([to_one_hot(result_i[1]) for result_i in results])
@@ -32,13 +32,14 @@ def ensemble_exp(datasets,binary=True):
         votes=np.array([result_i[1] for result_i in results])
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
-    return accuracy_score(y_true,y_pred)
-
+    if(acc_only):
+        return accuracy_score(y_true,y_pred)
+    return y_true,y_pred,results[0][2]
 
 def combined_dataset(common_path,deep_path):
     common_data=feats.read(common_path)[0]
     deep_data=feats.read(deep_path)
-    datasets=[common_data+data_i 
+    datasets=[common_data+ data_i 
                 for data_i in deep_data]
     return datasets
 

@@ -10,12 +10,16 @@ class FeatureSet(object):
         self.info=info
 
     def __add__(self,feat_i):
+        if(len(self)==len(feat_i)):
+            new_X=np.concatenate([self.X,feat_i.X],axis=1)
+            return FeatureSet(new_X,self.info)
         new_info=self.common_names(feat_i)
         new_info.sort()
         feat1,feat2=self.to_dict(),feat_i.to_dict()
         feat1={ name_i:feat1[name_i] for name_i in new_info}
         feat2={ name_i:feat2[name_i] for name_i in new_info}
         new_X=np.concatenate([from_dict(feat1).X,from_dict(feat2).X],axis=1)
+        raise Exception(new_X.shape)
         return FeatureSet(new_X,new_info)
 
     def __len__(self):
