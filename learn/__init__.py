@@ -19,7 +19,7 @@ def train_model(data,binary=False,clf_type="LR"):
         y_pred=model.predict(test.X)
     else:
         y_pred=model.predict_proba(test.X)
-    return y_true,y_pred,data.info
+    return y_true,y_pred,test.info
 
 def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(type(datasets)==str):

@@ -1,7 +1,7 @@
 import learn,learn.report,feats
 
 class Ensemble(object):
-#	def __init__(self):
+#	def __init__(self,selection):
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False):
         datasets=self.read_datasets(in_path)
@@ -10,7 +10,8 @@ class Ensemble(object):
         if(acc_only):
             print(result)
         else:
-        	learn.report.show_result(result)
+            learn.report.show_result(result)
+            learn.report.show_confusion(result)
 
     def read_datasets(self,in_path):
         if(type(in_path)==tuple):
