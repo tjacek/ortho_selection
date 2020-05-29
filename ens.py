@@ -1,10 +1,14 @@
 import learn,learn.report,feats
+import selection
 
 class Ensemble(object):
-#	def __init__(self,selection):
+    def __init__(self,selection=None):
+        self.selection=selection
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False):
         datasets=self.read_datasets(in_path)
+        if(self.selection):
+            datasets=[self.selection(data_i) for data_i in datasets]
         result=learn.ensemble_exp(datasets,
         	            binary=binary,clf=clf,acc_only=acc_only)
         if(acc_only):
@@ -19,7 +23,7 @@ class Ensemble(object):
             return learn.combined_dataset(common_path,deep_path)
         return feats.read(in_path)
 
-ensemble=Ensemble()
+ensemble=Ensemble(selection.basic_select)
 
 paths=("../proj2/stats/feats","../ens5/basic/feats")
 ensemble(paths)
