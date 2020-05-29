@@ -63,6 +63,6 @@ def get_colors_helper(info,plot_type="person"):
 
 if __name__ == "__main__":
     common_path="../proj2/stats/feats"
-    deep_path='../ens5/basic/feats'
-    all_plots(common_path,deep_path,"plots","cat")
+    deep_path='../ens5/sim/feats'
+    all_plots(common_path,deep_path,"plots2","cat")
 #    tsne_plot('../proj2/sim/feats',show=True,plot_type="cat")

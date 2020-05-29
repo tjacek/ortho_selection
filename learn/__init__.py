@@ -1,11 +1,7 @@
 import numpy as np
 import feats
 from sklearn.metrics import accuracy_score
-import learn.clf 
-
-#def simple_exp(data):
-#    y_true,y_pred,names=train_model(data)
-#    return accuracy_score(y_true,y_pred)
+import learn.clf,tools
 
 def train_model(data,binary=False,clf_type="LR",acc_only=False):
     if(type(data)==str):	
@@ -47,6 +43,11 @@ def to_one_hot(y):
         vec_i[y_i]=1
         one_hot.append(vec_i)
     return np.array(one_hot)
+
+def get_acc(common_path,deep_path,clf="LR"):
+    datasets=tools.combined_dataset(common_path,deep_path)
+    return [train_model(data_i,True,clf,True) 
+                for data_i in datasets]
 
 if __name__=="__main__":
     printf(ensemble_exp("../ens5/sim/feats",False))

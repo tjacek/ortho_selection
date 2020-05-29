@@ -7,7 +7,7 @@ def basic_select(data):
     train,test=data.split()
     info=train.mutual()
     info=(info-np.mean(info))/np.std(info)
-    return select_feats(data,info,lambda f: f<1)
+    return select_feats(data,info,lambda f: f>-1)
 
 def person_select(data):
     train,test=data.split()
@@ -29,7 +29,7 @@ def complex_select(data):
 def select_feats(data,info,cond):
     new_X=[ x_i
             for i,x_i in enumerate(data.X.T)
-                if(info[i]>-1)]
+                if(cond(info[i]))]
     new_X=np.array(new_X).T
     new_feats=data.modify(new_X)
     print(new_feats.dim())
