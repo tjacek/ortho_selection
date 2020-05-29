@@ -3,11 +3,11 @@ import feats
 from sklearn.metrics import accuracy_score
 import learn.clf 
 
-def simple_exp(data):
-    y_true,y_pred,names=train_model(data)
-    return accuracy_score(y_true,y_pred)
+#def simple_exp(data):
+#    y_true,y_pred,names=train_model(data)
+#    return accuracy_score(y_true,y_pred)
 
-def train_model(data,binary=False,clf_type="LR"):
+def train_model(data,binary=False,clf_type="LR",acc_only=False):
     if(type(data)==str):	
         data=feats.read(data)[0]
     data.norm()
@@ -19,7 +19,10 @@ def train_model(data,binary=False,clf_type="LR"):
         y_pred=model.predict(test.X)
     else:
         y_pred=model.predict_proba(test.X)
-    return y_true,y_pred,test.info
+    if(acc_only):
+        return accuracy_score(y_true,y_pred)
+    else:
+        return y_true,y_pred,test.info
 
 def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(type(datasets)==str):
@@ -35,13 +38,6 @@ def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(acc_only):
         return accuracy_score(y_true,y_pred)
     return y_true,y_pred,results[0][2]
-
-def combined_dataset(common_path,deep_path):
-    common_data=feats.read(common_path)[0]
-    deep_data=feats.read(deep_path)
-    datasets=[common_data+ data_i 
-                for data_i in deep_data]
-    return datasets
 
 def to_one_hot(y):
     n_cats=max(y)+1

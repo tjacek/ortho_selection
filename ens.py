@@ -1,5 +1,5 @@
 import learn,learn.report,feats
-import selection
+import selection,tools
 
 class Ensemble(object):
     def __init__(self,selection=None):
@@ -20,7 +20,7 @@ class Ensemble(object):
     def read_datasets(self,in_path):
         if(type(in_path)==tuple):
             common_path,deep_path=in_path	
-            return learn.combined_dataset(common_path,deep_path)
+            return tools.combined_dataset(common_path,deep_path)
         return feats.read(in_path)
 
 ensemble=Ensemble(selection.basic_select)
