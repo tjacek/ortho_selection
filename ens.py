@@ -1,17 +1,20 @@
 import learn,learn.report,feats
 import selection,tools
+import numpy as np
 
 class Ensemble(object):
     def __init__(self,selection=None):
-    	if(selection):
+#        self.selection=total_selection
+        if(selection):
             self.selection=selection_decorator(selection)
         else:
-        	self.selection=read_datasets
+            self.selection=read_datasets
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False):
         datasets=self.selection(in_path)
-        result=learn.ensemble_exp(datasets,
-        	            binary=binary,clf=clf,acc_only=acc_only)
+#        result=learn.ensemble_exp(datasets,
+#        	            binary=binary,clf=clf,acc_only=acc_only)
+        result=learn.mixed_ensemble(datasets)
         if(acc_only):
             print(result)
         else:
@@ -31,7 +34,41 @@ def read_datasets(in_path):
         return tools.combined_dataset(common_path,deep_path)
     return feats.read(in_path)
 
-ensemble=Ensemble(selection.basic_select)
+def binary_selection(in_path):
+    common_path,deep_path=in_path	
+    deep_data=feats.read(deep_path)
+    deep_data=[binary_helper(i,data_i) 
+        for i,data_i in enumerate(deep_data)]
+    common=feats.read(common_path)[0]
+    datasets=[ common+deep_i for deep_i in deep_data]
+    return datasets
+
+def binary_helper(i,data_i):
+    train_i=data_i.split()[0]
+    train_i.info=tools.person_cats(train_i.info)
+    binary_i=train_i#.binary(i)    
+    info=binary_i.mutual()
+#    print("%f,%f" % (np.mean(info),np.median(info)))
+    info=(info-np.mean(info))/np.std(info)
+    return selection.select_feats(data_i,
+            info,lambda x:x<1)
+
+def total_selection(in_path):
+    common_path,deep_path=in_path	
+    deep_data=feats.read(deep_path)
+    deep_train=[deep_i.split()[0]
+                    for deep_i in deep_data]
+    info=[np.median(train_i.mutual())
+            for train_i in deep_train]
+    info=(info-np.mean(info))/np.std(info)
+    print(info)
+    common=feats.read(common_path)[0]
+    datasets=[ common+data_i
+                for i,data_i in enumerate(deep_data)
+                    if(1==1)]#info[i]>-1)]
+    return datasets
+
+ensemble=Ensemble()#selection.basic_select)
 
 paths=("../proj2/stats/feats","../ens5/basic/feats")
 ensemble(paths)

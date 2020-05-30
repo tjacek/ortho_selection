@@ -27,4 +27,6 @@ def full_ensemble(common_path,deep_path):
 
 
 #ensemble_exp("../ens5/sim/feats")
-full_ensemble("../proj2/stats/feats","../ens5/basic/feats")
+#full_ensemble("../proj2/stats/feats","../ens5/basic/feats")
+acc=learn.get_acc("../proj2/stats/feats","../ens5/sim/feats")
+print(acc)
