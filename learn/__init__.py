@@ -23,26 +23,17 @@ def train_model(data,binary=False,clf_type="LR",acc_only=False):
 def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(type(datasets)==str):
         datasets=feats.read(datasets)
-    results=[train_model(data_i,binary,clf) for data_i in datasets]
+    if(type(clf)==list):
+        results=[]
+        for clf_i in clf:
+            results+=[train_model(data_i,binary,clf_i) for data_i in datasets]
+    else:
+        results=[train_model(data_i,binary,clf) for data_i in datasets]
     y_true=results[0][0]
     y_pred=voting(results,binary)
-#    if(binary):
-#        votes=np.array([to_one_hot(result_i[1]) for result_i in results])
-#    else:
-#        votes=np.array([result_i[1] for result_i in results])
-#    votes=np.sum(votes,axis=0)
-#    y_pred=[np.argmax(vote_i) for vote_i in votes]
     if(acc_only):
         return accuracy_score(y_true,y_pred)
     return y_true,y_pred,results[0][2]
-
-def mixed_ensemble(datasets,binary=False):
-    LR_results=[train_model(data_i,binary,"LR") for data_i in datasets]
-    SVC_results=[train_model(data_i,binary,"SVC") for data_i in datasets]
-    results=LR_results+SVC_results
-    y_true=results[0][0]
-    y_pred=voting(results,binary)
-    return y_true,y_pred,results[0][2]    
 
 def voting(results,binary):
     if(binary):

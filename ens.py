@@ -4,22 +4,25 @@ import numpy as np
 
 class Ensemble(object):
     def __init__(self,selection=None):
-#        self.selection=total_selection
-        if(selection):
-            self.selection=selection_decorator(selection)
-        else:
-            self.selection=read_datasets
+        self.selection=selection
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False):
         datasets=self.selection(in_path)
-#        result=learn.ensemble_exp(datasets,
-#        	            binary=binary,clf=clf,acc_only=acc_only)
-        result=learn.mixed_ensemble(datasets)
+        result=learn.ensemble_exp(datasets,
+        	            binary=binary,clf=clf,acc_only=acc_only)
+#        result=learn.mixed_ensemble(datasets)
         if(acc_only):
             print(result)
         else:
             learn.report.show_result(result)
             learn.report.show_confusion(result)
+
+def get_ensemble(selection=None):
+    if(selection):
+        selection=selection_decorator(selection)
+    else:
+        selection=read_datasets
+    return Ensemble(selection)
 
 def selection_decorator(selection):
 	def selection_helper(in_path):
@@ -65,10 +68,10 @@ def total_selection(in_path):
     common=feats.read(common_path)[0]
     datasets=[ common+data_i
                 for i,data_i in enumerate(deep_data)
-                    if(1==1)]#info[i]>-1)]
+                    if(info[i]>-1)]
     return datasets
 
-ensemble=Ensemble()#selection.basic_select)
+ensemble=get_ensemble(None)#selection.complex_select)
 
 paths=("../proj2/stats/feats","../ens5/basic/feats")
-ensemble(paths)
+ensemble(paths,clf=["LR","SVC"])
