@@ -1,7 +1,7 @@
 import numpy as np
 import feats
 from sklearn.metrics import accuracy_score
-import learn.clf,tools
+import learn.clf,tools,files,feats
 
 def train_model(data,binary=False,clf_type="LR",acc_only=False):
     if(type(data)==str):	
@@ -47,6 +47,21 @@ def voting(results,binary):
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
     return y_pred
+
+def save_votes(votes,out_path):
+    files.make_dir(out_path)
+    for i,vote_i in enumerate(votes):
+        out_i="%s/nn%d" % (out_path,i)
+        data_i=feats.FeatureSet(vote_i[1],vote_i[2])
+        data_i.save(out_i)
+
+def read_votes(in_path):
+    data=feats.read(in_path)
+    votes=[]
+    y_true=data[0].get_labels()
+    for data_i in data:
+        votes.append([y_true,data_i.X,data_i.info])
+    return votes
 
 def to_one_hot(y):
     n_cats=max(y)+1

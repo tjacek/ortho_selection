@@ -1,18 +1,31 @@
 import learn,learn.report,feats
 import selection,tools
 import numpy as np
+import os.path
+from sklearn.metrics import accuracy_score
 
 class Ensemble(object):
     def __init__(self,selection=None):
         self.selection=selection
 
-    def __call__(self,in_path,binary=False,clf="LR",acc_only=False):
+    def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
         datasets=self.selection(in_path)
-        result=learn.ensemble_exp(datasets,
-        	            binary=binary,clf=clf,acc_only=acc_only)
-#        result=learn.mixed_ensemble(datasets)
+#        result=learn.ensemble_exp(datasets,
+#        	            binary=binary,clf=clf,acc_only=acc_only)
+        if(out_path):
+#            raise Exception(os.path.isdir(out_path))
+            if(os.path.isdir(out_path)):
+                votes=learn.read_votes(out_path)
+            else:
+                votes=learn.make_votes(datasets,binary,clf)
+                learn.save_votes(votes,out_path)
+        else:
+            votes=learn.make_votes(datasets,binary,clf)
+        y_true=votes[0][0]
+        y_pred=learn.voting(votes,binary)
+        result=[y_true,y_pred,votes[0][2]]	
         if(acc_only):
-            print(result)
+            print(accuracy_score(y_true,y_pred))
         else:
             learn.report.show_result(result)
             learn.report.show_confusion(result)
@@ -74,4 +87,4 @@ def total_selection(in_path):
 ensemble=get_ensemble(None)#selection.complex_select)
 
 paths=("../proj2/stats/feats","../ens5/basic/feats")
-ensemble(paths,clf=["LR","SVC"])
+ensemble(paths,clf=["LR","SVC"],out_path="best/mixed")
