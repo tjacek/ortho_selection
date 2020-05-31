@@ -1,3 +1,5 @@
+import feats
+
 def filtered_dict(names,dic):
     return { name_i:dic[name_i] for name_i in names}
 
@@ -17,3 +19,14 @@ def split(names,selector=None):
 
 def get_person(name_i):
     return (int(name_i.split('_')[1])%2)==1
+
+def person_cats(y):
+    return ["%s_%d" %(y_i.split("_")[1],i) 
+                for i,y_i in enumerate(y)]
+
+def combined_dataset(common_path,deep_path):
+    common_data=feats.read(common_path)[0]
+    deep_data=feats.read(deep_path)
+    datasets=[common_data+ data_i 
+                for data_i in deep_data]
+    return datasets
