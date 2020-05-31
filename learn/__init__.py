@@ -23,17 +23,21 @@ def train_model(data,binary=False,clf_type="LR",acc_only=False):
 def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
     if(type(datasets)==str):
         datasets=feats.read(datasets)
-    if(type(clf)==list):
-        results=[]
-        for clf_i in clf:
-            results+=[train_model(data_i,binary,clf_i) for data_i in datasets]
-    else:
-        results=[train_model(data_i,binary,clf) for data_i in datasets]
-    y_true=results[0][0]
-    y_pred=voting(results,binary)
+    votes=make_votes(datasets,binary,clf)
+    y_true=votes[0][0]
+    y_pred=voting(votes,binary)
     if(acc_only):
         return accuracy_score(y_true,y_pred)
-    return y_true,y_pred,results[0][2]
+    return y_true,y_pred,votes[0][2]
+
+def make_votes(datasets,binary,clf):
+    if(type(clf)==list):
+        votes=[]
+        for clf_i in clf:
+            votes+=[train_model(data_i,binary,clf_i) for data_i in datasets]
+    else:
+        votes=[train_model(data_i,binary,clf) for data_i in datasets]
+    return votes
 
 def voting(results,binary):
     if(binary):

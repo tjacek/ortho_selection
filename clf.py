@@ -10,15 +10,15 @@ def person_selection(common_path,deep_path):
     print(acc)
     acc=(acc-np.mean(acc))/np.std(acc)
     print(acc)
-    s_ensemble(common_path,deep_path,acc)
+    s_ensemble(common_path,deep_path,acc,lambda x:x>-1)
 
-def s_ensemble(common_path,deep_path,acc):
+def s_ensemble(common_path,deep_path,acc,cond):
     datasets=tools.combined_dataset(common_path,deep_path)
     datasets=[data_i 
              for i,data_i in enumerate(datasets)
-                if(acc[i]> -1.0)]
+                if(cond(acc[i]))]
     print("n_clf %d" % len(datasets))    
-    acc=learn.ensemble_exp(datasets,binary=False,clf="LR",acc_only=True)
+    acc=learn.ensemble_exp(datasets,binary=False,clf=["LR","SVC"],acc_only=True)
     print(acc)
 
 def pred_person(data_i):
@@ -29,7 +29,6 @@ def pred_person(data_i):
     return person_train(data_i)
 #    return learn.train_model(person_i,
 #                binary=True,clf_type="LR",acc_only=True)
-
 
 def person_train(data_i):
     data_i.norm()
@@ -52,6 +51,6 @@ def simple_selection(common_path,deep_path):
     acc=np.array(acc)
     acc= (acc-np.mean(acc))/np.std(acc)
     print(acc)
-    s_ensemble(common_path,deep_path,acc)
+    s_ensemble(common_path,deep_path,acc,lambda x:x>-1)
 
-person_selection("../proj2/stats/feats","../ens5/sim/feats")
+person_selection("../proj2/stats/feats","../ens5/basic/feats")
