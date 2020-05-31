@@ -2,7 +2,7 @@ import learn,learn.report,feats
 import selection,tools
 import numpy as np
 import os.path
-from sklearn.metrics import accuracy_score
+#from sklearn.metrics import accuracy_score
 
 class Ensemble(object):
     def __init__(self,selection=None):
@@ -25,7 +25,8 @@ class Ensemble(object):
         y_pred=learn.voting(votes,binary)
         result=[y_true,y_pred,votes[0][2]]	
         if(acc_only):
-            print(accuracy_score(y_true,y_pred))
+             print(learn.report.compute_score(result))
+#            print(accuracy_score(y_true,y_pred))
         else:
             learn.report.show_result(result)
             learn.report.show_confusion(result)
@@ -84,7 +85,7 @@ def total_selection(in_path):
                     if(info[i]>-1)]
     return datasets
 
-ensemble=get_ensemble(None)#selection.complex_select)
-
-paths=("../proj2/stats/feats","../ens5/basic/feats")
-ensemble(paths,clf=["LR","SVC"],out_path="best/mixed")
+if __name__=="__main__":
+    ensemble=get_ensemble(None)#selection.complex_select)
+    paths=("../proj2/stats/feats","../ens5/basic/feats")
+    ensemble(paths,clf=["LR","SVC"],out_path="best/mixed")
