@@ -2,7 +2,6 @@ import learn,learn.report,feats
 import selection,tools
 import numpy as np
 import os.path
-#from sklearn.metrics import accuracy_score
 
 class Ensemble(object):
     def __init__(self,selection=None):
@@ -10,10 +9,7 @@ class Ensemble(object):
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
         datasets=self.selection(in_path)
-#        result=learn.ensemble_exp(datasets,
-#        	            binary=binary,clf=clf,acc_only=acc_only)
         if(out_path):
-#            raise Exception(os.path.isdir(out_path))
             if(os.path.isdir(out_path)):
                 votes=learn.read_votes(out_path)
             else:
@@ -26,7 +22,6 @@ class Ensemble(object):
         result=[y_true,y_pred,votes[0][2]]	
         if(acc_only):
              print(learn.report.compute_score(result))
-#            print(accuracy_score(y_true,y_pred))
         else:
             learn.report.show_result(result)
             learn.report.show_confusion(result)
