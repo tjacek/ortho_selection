@@ -25,6 +25,10 @@ def person_cats(y):
                 for i,y_i in enumerate(y)]
 
 def combined_dataset(common_path,deep_path):
+    if(not common_path):
+        return feats.read(deep_path)
+    if(not deep_path):
+        return feats.read(common_path)
     common_data=feats.read(common_path)[0]
     deep_data=feats.read(deep_path)
     datasets=[common_data+ data_i 
