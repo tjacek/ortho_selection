@@ -1,13 +1,17 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
+import learn.bag
 
 def get_cls(clf_type):
+    if(clf_type=="bag"):
+        print("bag")
+        return learn.bag.BagEnsemble()
     if(clf_type=="SVC"):
         print("SVC")
         return make_SVC()
     else:
-#        print("LR")
+        print("LR")
         return LogisticRegression(solver='liblinear')
 
 def make_SVC():
