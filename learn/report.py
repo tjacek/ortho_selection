@@ -27,11 +27,19 @@ def compute_score(result,as_str=True):
     else:
         return (accuracy,precision,recall,f1)
 
-def get_acc(common_path,deep_path,clf="LR"):
-    datasets=tools.combined_dataset(common_path,deep_path)
-    return [train_model(data_i,True,clf,True) 
-                for data_i in datasets]
-
+def get_acc(paths,clf="LR"):
+    if(type(paths)==tuple):
+        common_path,deep_path=paths
+        datasets=tools.combined_dataset(common_path,deep_path)
+        return [learn.train_model(data_i,True,clf,True) 
+                    for data_i in datasets]
+    votes=learn.read_votes(paths)
+    y_true=[int(name_i.split("_")[0])-1 
+                for name_i in votes[0][2]]
+    result=[learn.voting([vote_i],False) for vote_i in votes]
+    acc=[accuracy_score(y_true,result_i) for result_i in result]
+    return acc
+    
 def cat_acc(common_path,deep_path,cat_k,clf="LR"):
     datasets=tools.combined_dataset(common_path,deep_path)
     results= [learn.train_model(data_i,True,clf,False) 
