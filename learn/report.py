@@ -1,7 +1,7 @@
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support,accuracy_score
-import learn,tools
+import learn,tools,files
 
 def show_confusion(result):
     cf_matrix=confusion_matrix(result[0],result[1])
@@ -40,18 +40,15 @@ def get_acc(paths,clf="LR"):
     acc=[accuracy_score(y_true,result_i) for result_i in result]
     return acc
     
-def cat_acc(common_path,deep_path,cat_k,clf="LR"):
-    datasets=tools.combined_dataset(common_path,deep_path)
-    results= [learn.train_model(data_i,True,clf,False) 
-                for data_i in datasets]
-    y_true=results[0][0]
-    cat_k_true=[ y_i==cat_k for y_i in y_true]
-    acc=[]
-    for result_i in results:
-        pred_i=result_i[1]
-        cat_pred_i=[ int(y_true[j]==pred_ij and cat_k_true[j]) 
-                        for j,pred_ij in enumerate(pred_i)]
-        acc.append(sum(cat_pred_i))
-    cat_size=sum(cat_k_true)
-    acc=[ acc_i/cat_size for acc_i in acc]
+def cat_acc(in_path,cat_k,clf="LR"):
+    votes=[ learn.read_votes(path_i) 
+            for path_i in files.top_files(in_path)]
+    y_true=votes[0][0][0]
+    preds=[learn.voting(vote_i,False) for vote_i in votes]
+    acc=[ binary_acc(y_true,pred_i,cat_k) for pred_i in preds]
     return acc
+
+def binary_acc(y_true,y_pred,cat_k):
+    correct=[int(y_true[j]==pred_j and y_true[j]==cat_k) 
+                for j,pred_j in enumerate(y_pred)]
+    return sum(correct)/y_true.count(cat_k)

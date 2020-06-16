@@ -82,5 +82,8 @@ def total_selection(in_path):
 
 if __name__=="__main__":
     ensemble=get_ensemble(None)#selection.complex_select)
-    paths=("../proj2/stats/feats","../ens5/basic/feats")
-    ensemble(paths,clf=["LR","SVC"],out_path="best/mixed")
+#    paths=("../smooth/sim/feats","../ens5/basic/feats")
+    paths=("../smooth/common/stats/feats","../smooth/ens/basic/feats")
+#    ensemble(paths,clf="LR",out_path=None)
+    acc=learn.report.cat_acc("raw/SVC",14)
+    print(acc)
