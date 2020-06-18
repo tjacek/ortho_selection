@@ -1,6 +1,7 @@
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support,accuracy_score
+from collections import defaultdict
 import learn,tools,files
 
 def show_confusion(result):
@@ -52,3 +53,15 @@ def binary_acc(y_true,y_pred,cat_k):
     correct=[int(y_true[j]==pred_j and y_true[j]==cat_k) 
                 for j,pred_j in enumerate(y_pred)]
     return sum(correct)/y_true.count(cat_k)
+
+def cat_by_error(in_path):
+    votes=learn.read_votes(in_path)
+    y_true=votes[0][0]
+    y_pred=learn.voting(votes,False)
+    erorr=defaultdict(lambda:0)
+    for true_i,pred_i in zip(y_true,y_pred):
+        if(true_i!=pred_i):
+            erorr[true_i]+=1
+    norm=sum([value_j for value_j in erorr.values()])
+    return { cat_j:(value_j/norm) 
+                for cat_j,value_j in erorr.items()}
