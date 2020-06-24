@@ -44,11 +44,15 @@ def ens_acc(paths,clf="LR",acc_only=True):
 def to_acc(results):
     return [ accuracy_score(result_i[0],result_i[1]) for result_i in results]
 
-def cat_acc(in_path,cat_k,clf="LR"):
-    votes=[ learn.read_votes(path_i) 
-            for path_i in files.top_files(in_path)]
-    y_true=votes[0][0][0]
-    preds=[learn.voting(vote_i,False) for vote_i in votes]
+def cat_acc(results,cat_k,clf="LR"):
+    if(type(results)==str):
+        votes=[ learn.read_votes(path_i) 
+            for path_i in files.top_files(results)]
+        y_true=votes[0][0][0]
+        preds=[learn.voting(vote_i,False) for vote_i in votes]
+    else:
+        y_true=results[0][0]
+        preds=[result_i[1] for result_i in results]
     acc=[ binary_acc(y_true,pred_i,cat_k) for pred_i in preds]
     return acc
 
