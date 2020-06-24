@@ -11,7 +11,7 @@ def person_selection(in_path):
 #    print(acc)
     acc=(acc-np.mean(acc))/np.std(acc)
 #    print(acc)
-    cond=lambda x:x<1
+    cond=lambda x:x>-1
     return selection_template(common_path,deep_path,acc,cond)
 
 def selection_template(common_path,deep_path,acc,cond):
@@ -55,4 +55,5 @@ def simple_selection(in_path):
     cond=lambda x:x>-1
     return selection_template(common_path,deep_path,acc,cond)
 
-#person_selection("../proj2/stats/feats","../ens5/basic/feats")
+if __name__=="__main__":
+    paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
