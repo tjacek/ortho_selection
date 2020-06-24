@@ -58,9 +58,12 @@ def binary_acc(y_true,y_pred,cat_k):
     return sum(correct)/y_true.count(cat_k)
 
 def cat_by_error(in_path):
-    votes=learn.read_votes(in_path)
-    y_true=votes[0][0]
-    y_pred=learn.voting(votes,False)
+    if(type(in_path)==str):
+        votes=learn.read_votes(in_path)
+        y_true=votes[0][0]
+        y_pred=learn.voting(votes,False)
+    else:
+        y_true,y_pred=in_path[0],in_path[1]
     erorr=defaultdict(lambda:0)
     for true_i,pred_i in zip(y_true,y_pred):
         if(true_i!=pred_i):

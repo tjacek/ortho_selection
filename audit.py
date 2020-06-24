@@ -14,9 +14,17 @@ def show_acc(paths):
 def ens_stats(paths):
     result=learn.report.ens_acc((paths['common'],paths['ens']),clf="LR",acc_only=False)	
     print(learn.report.to_acc(result))
+    full_result=simple_exp(paths)
+    cat_dict=learn.report.cat_by_error(full_result)
+    print(cat_dict)
 
 def get_paths(common_path,ens_path):
     return {'common':common_path,'ens':ens_path}
+
+def simple_exp(paths):
+    ensemble=ens.get_ensemble()
+    path=(paths['common'],paths['ens'])
+    return ensemble.get_result(path,clf="LR")
 
 paths=get_paths("../outliners/common/stats/feats","../outliners/ens/sim/feats")
 ens_stats(paths)

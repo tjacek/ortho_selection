@@ -8,6 +8,16 @@ class Ensemble(object):
         self.selection=selection
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
+        result=self.get_result(in_path,binary,clf,out_path)
+        if(acc_only):
+            acc_i=learn.report.compute_score(result)
+            print(acc_i)
+            return acc_i
+        else:
+            learn.report.show_result(result)
+            learn.report.show_confusion(result)
+
+    def get_result(self,in_path,binary=False,clf="LR",out_path=None):
         datasets=self.selection(in_path)
         if(out_path):
             if(os.path.isdir(out_path)):
@@ -19,12 +29,7 @@ class Ensemble(object):
             votes=learn.make_votes(datasets,binary,clf)
         y_true=votes[0][0]
         y_pred=learn.voting(votes,binary)
-        result=[y_true,y_pred,votes[0][2]]	
-        if(acc_only):
-             print(learn.report.compute_score(result))
-        else:
-            learn.report.show_result(result)
-            learn.report.show_confusion(result)
+        return [y_true,y_pred,votes[0][2]]  
 
 def get_ensemble(selection=None):
     if(selection):
@@ -83,7 +88,8 @@ def total_selection(in_path):
 if __name__=="__main__":
     ensemble=get_ensemble(None)#selection.complex_select)
 #    paths=("../smooth/sim/feats","../ens5/basic/feats")
-    paths=("../smooth/common/stats/feats","../smooth/ens/basic/feats")
+#    paths=("../smooth/common/sim/feats",None)#"../smooth/ens/basic/feats")
+    paths=("../outliners/common/sim/feats",None)
 #    ensemble(paths,clf="LR",out_path=None)
-    acc=learn.report.cat_acc("raw/SVC",14)
+    acc=learn.report.cat_by_error("outliners/LR/stats_basic")
     print(acc)
