@@ -28,11 +28,11 @@ def compute_score(result,as_str=True):
     else:
         return (accuracy,precision,recall,f1)
 
-def get_acc(paths,clf="LR"):
+def ens_acc(paths,clf="LR",acc_only=True):
     if(type(paths)==tuple):
         common_path,deep_path=paths
         datasets=tools.combined_dataset(common_path,deep_path)
-        return [learn.train_model(data_i,True,clf,True) 
+        return [learn.train_model(data_i,True,clf,acc_only) 
                     for data_i in datasets]
     votes=learn.read_votes(paths)
     y_true=[int(name_i.split("_")[0])-1 
@@ -40,7 +40,10 @@ def get_acc(paths,clf="LR"):
     result=[learn.voting([vote_i],False) for vote_i in votes]
     acc=[accuracy_score(y_true,result_i) for result_i in result]
     return acc
-    
+  
+def to_acc(results):
+    return [ accuracy_score(result_i[0],result_i[1]) for result_i in results]
+
 def cat_acc(in_path,cat_k,clf="LR"):
     votes=[ learn.read_votes(path_i) 
             for path_i in files.top_files(in_path)]
