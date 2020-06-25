@@ -4,18 +4,17 @@ from sklearn.metrics import accuracy_score
 import feats,learn,tools
 
 def person_selection(in_path):
-    common_path,deep_path=in_path    
-    datasets=feats.read(deep_path)
+    datasets=tools.read_datasets(in_path)
     acc=[pred_person(data_i) for data_i in datasets]
     acc=np.array(acc)
-#    print(acc)
+    print(acc)
     acc=(acc-np.mean(acc))/np.std(acc)
-#    print(acc)
+    print(acc)
     cond=lambda x:x>-1
-    return selection_template(common_path,deep_path,acc,cond)
+    return selection_template(in_path,acc,cond)
 
-def selection_template(common_path,deep_path,acc,cond):
-    datasets=tools.combined_dataset(common_path,deep_path)
+def selection_template(in_path,acc,cond):
+    datasets=tools.read_datasets(in_path)
     s_datasets=[data_i 
              for i,data_i in enumerate(datasets)
                 if(cond(acc[i]))]
@@ -40,8 +39,7 @@ def person_train(data_i):
     return accuracy_score(y_true,y_pred)
 
 def simple_selection(in_path):
-    common_path,deep_path=in_path    
-    datasets=tools.combined_dataset(common_path,deep_path)
+    datasets=tools.read_datasets(in_path)
     datasets=[data_i.split()[0] for data_i in datasets]
     for data_i in datasets:
         data_i.info=["%s_%d" %(name_i.split('_')[0],i) 
@@ -52,8 +50,8 @@ def simple_selection(in_path):
     acc=np.array(acc)
     acc= (acc-np.mean(acc))/np.std(acc)
     print(acc)
-    cond=lambda x:x>-1
-    return selection_template(common_path,deep_path,acc,cond)
+    cond=lambda x:x>0
+    return selection_template(in_path,acc,cond)
 
 if __name__=="__main__":
     paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")

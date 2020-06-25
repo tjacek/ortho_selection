@@ -35,21 +35,15 @@ def get_ensemble(selection=None):
     if(selection):
         selection=selection_decorator(selection)
     else:
-        selection=read_datasets
+        selection=tools.read_datasets
     return Ensemble(selection)
 
 def selection_decorator(selection):
 	def selection_helper(in_path):
-		datasets=read_datasets(in_path)
+		datasets=tools.read_datasets(in_path)
 		datasets=[selection(data_i) for data_i in datasets]
 		return datasets
 	return selection_helper
-
-def read_datasets(in_path):
-    if(type(in_path)==tuple):
-        common_path,deep_path=in_path	
-        return tools.combined_dataset(common_path,deep_path)
-    return feats.read(in_path)
 
 def binary_selection(in_path):
     common_path,deep_path=in_path	

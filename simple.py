@@ -14,7 +14,7 @@ def ens_compare(in_path):
     print("%f,%f" % (old_acc,new_acc))
 
 def ensemble_exp(in_path):
-    ensemble=ens.Ensemble(clf.person_selection)
+    ensemble=ens.Ensemble(clf.simple_selection)
     ensemble(in_path,clf="LR")
 
 def full_ensemble(common_path,deep_path):

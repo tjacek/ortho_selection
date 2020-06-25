@@ -24,6 +24,12 @@ def person_cats(y):
     return ["%s_%d" %(y_i.split("_")[1],i) 
                 for i,y_i in enumerate(y)]
 
+def read_datasets(in_path):
+    if(type(in_path)==tuple):
+        common_path,deep_path=in_path   
+        return combined_dataset(common_path,deep_path)
+    return feats.read(in_path)
+
 def combined_dataset(common_path,deep_path):
     if(not common_path):
         return feats.read(deep_path)
