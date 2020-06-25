@@ -40,6 +40,14 @@ def person_train(data_i):
 
 def simple_selection(in_path):
     datasets=tools.read_datasets(in_path)
+    acc=cross_acc(datasets)
+    acc=np.array(acc)
+    acc= (acc-np.mean(acc))/np.std(acc)
+    print(acc)
+    cond=lambda x:x>0
+    return selection_template(in_path,acc,cond)
+
+def cross_acc(datasets):
     datasets=[data_i.split()[0] for data_i in datasets]
     for data_i in datasets:
         data_i.info=["%s_%d" %(name_i.split('_')[0],i) 
@@ -47,11 +55,7 @@ def simple_selection(in_path):
     acc=[ learn.train_model(data_i,
             binary=True,clf_type="LR",acc_only=True)
                 for data_i in datasets]
-    acc=np.array(acc)
-    acc= (acc-np.mean(acc))/np.std(acc)
-    print(acc)
-    cond=lambda x:x>0
-    return selection_template(in_path,acc,cond)
+    return acc
 
 if __name__=="__main__":
     paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")

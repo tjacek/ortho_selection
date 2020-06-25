@@ -30,9 +30,8 @@ def compute_score(result,as_str=True):
 
 def ens_acc(paths,clf="LR",acc_only=True):
     if(type(paths)==tuple):
-        common_path,deep_path=paths
-        datasets=tools.combined_dataset(common_path,deep_path)
-        return [learn.train_model(data_i,True,clf,acc_only) 
+        datasets=tools.read_datasets(paths)
+        return [learn.train_model(data_i,False,clf,acc_only) 
                     for data_i in datasets]
     votes=learn.read_votes(paths)
     y_true=[int(name_i.split("_")[0])-1 
