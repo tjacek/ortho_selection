@@ -1,5 +1,5 @@
 import learn,learn.report,feats
-import selection,tools
+import selection,tools,clf
 import numpy as np
 import os.path
 
@@ -32,6 +32,8 @@ class Ensemble(object):
         return [y_true,y_pred,votes[0][2]]  
 
 def get_ensemble(selection=None):
+    if(type(selection)==str):
+        return Ensemble(clf.simple_selection)
     if(selection):
         selection=selection_decorator(selection)
     else:
@@ -80,10 +82,9 @@ def total_selection(in_path):
     return datasets
 
 if __name__=="__main__":
-    ensemble=get_ensemble(None)#selection.complex_select)
-#    paths=("../smooth/sim/feats","../ens5/basic/feats")
-#    paths=("../smooth/common/sim/feats",None)#"../smooth/ens/basic/feats")
-    paths=("../outliners/common/sim/feats",None)
-#    ensemble(paths,clf="LR",out_path=None)
-    acc=learn.report.cat_by_error("outliners/LR/stats_basic")
-    print(acc)
+    ensemble=get_ensemble("simple")#selection.complex_select)
+    paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
+#    paths=(["../dtw/skew",paths[0]],"../outliners/ens/sim/feats")
+    ensemble(paths,clf="LR",out_path=None)
+#    acc=learn.report.cat_by_error("outliners/LR/stats_basic")
+#    print(acc)
