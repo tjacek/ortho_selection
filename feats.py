@@ -73,6 +73,8 @@ class FeatureSet(object):
         file_str.close()
 
 def read(in_path):
+    if(type(in_path)==list):
+        return [read_unified(in_path)]
     if(not os.path.isdir(in_path)):
         return [from_dict(read_single(in_path))]
     return [from_dict(read_single(path_i)) 
@@ -96,3 +98,11 @@ def read_single(in_path,as_dict=True):
     if(as_dict):
         return feat_dict
     return from_dict(feat_dict)
+
+def read_unified(paths):
+    datasets=[from_dict(read_single(path_i)) 
+                for path_i in paths]
+    full_data=datasets[0]
+    for data_i in datasets[1:]:
+        full_data+=data_i
+    return full_data
