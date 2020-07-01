@@ -33,7 +33,7 @@ class Ensemble(object):
 
 def get_ensemble(selection=None):
     if(type(selection)==str):
-        return Ensemble(clf.simple_selection)
+        return Ensemble(clf.get_selection(selection))
     if(selection):
         selection=selection_decorator(selection)
     else:

@@ -3,8 +3,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import feats,learn,tools
 
+def get_selection(selection_type):
+    if(selection_type=="person"):
+        return person_selection
+    return simple_selection
+
 def person_selection(in_path):
-    datasets=tools.read_datasets(in_path)
+    deep_only=(None,in_path[1])
+    datasets=tools.read_datasets(deep_only)
     acc=[pred_person(data_i) for data_i in datasets]
     acc=np.array(acc)
     print(acc)
