@@ -30,7 +30,7 @@ def read_datasets(in_path):
         return combined_dataset(common_path,deep_path)
     return feats.read(in_path)
 
-def combined_dataset(common_path,deep_path):
+def combined_dataset(common_path,deep_path,sub_datasets=False):
     if(not common_path):
         return feats.read(deep_path)
     if(not deep_path):
@@ -39,4 +39,6 @@ def combined_dataset(common_path,deep_path):
     deep_data=feats.read(deep_path)
     datasets=[common_data+ data_i 
                 for data_i in deep_data]
+    if(sub_datasets):
+        return datasets,common_data,deep_data
     return datasets
