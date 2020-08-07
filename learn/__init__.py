@@ -43,10 +43,13 @@ def voting(results,binary):
     if(binary):
         votes=np.array([to_one_hot(result_i[1]) for result_i in results])
     else:
-        votes=np.array([result_i[1] for result_i in results])
+        votes= get_prob(results)#np.array([result_i[1] for result_i in results])
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
     return y_pred
+
+def get_prob(results):
+    return np.array([result_i[1] for result_i in results])
 
 def save_votes(votes,out_path):
     files.make_dir(out_path)
