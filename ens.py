@@ -9,13 +9,7 @@ class Ensemble(object):
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
-        if(acc_only):
-            acc_i=learn.report.compute_score(result)
-            print(acc_i)
-            return acc_i
-        else:
-            learn.report.show_result(result)
-            learn.report.show_confusion(result)
+        show_report(result,acc_only)
 
     def get_result(self,in_path,binary=False,clf="LR",out_path=None):
         datasets=self.selection(in_path)
@@ -30,6 +24,16 @@ class Ensemble(object):
         y_true=votes[0][0]
         y_pred=learn.voting(votes,binary)
         return [y_true,y_pred,votes[0][2]]  
+
+def show_report(result,acc_only=False):
+    if(acc_only):
+        acc_i=learn.report.compute_score(result)
+        print(acc_i)
+        return acc_i
+    else:
+        learn.report.show_result(result)
+        learn.report.show_confusion(result)
+ 
 
 def get_ensemble(selection=None):
     if(type(selection)==str):
