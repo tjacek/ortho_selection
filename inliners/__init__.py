@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn import svm
+from inliners.one_svm import get_detector,find_inliners
 import ens,tools,learn
 
 def inliner_ens(paths):
@@ -34,23 +34,3 @@ def inliner_voting(full_data,inliners):
 def select_votes(vote_i, in_i):
     return [vote_ij for vote_ij,in_ij in zip(vote_i,in_i)
 	            if(in_ij==1)]
-
-def find_inliners(deep_data,detectors):
-    test_data=[ data_i.split()[1] for data_i in deep_data]
-    inliners=[ detect_i.score_samples(test_i.X) 
-                    for detect_i,test_i in zip(detectors,test_data)]
-    inliners=np.array(inliners).T
-    inliners[inliners>0]=1
-    inliners=1-inliners
-    return inliners
-
-def get_detector(data_i):
-    if(type(data_i)==list):
-        return [get_detector(data) for data in data_i]
-    train,test=data_i.split()	
-    clf_i=svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-    clf_i.fit_predict(train.X)
-    return clf_i
-
-paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
-inliner_ens(paths)
