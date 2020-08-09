@@ -40,26 +40,29 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
                    color=plt.cm.tab20( color_i),
                    fontdict={'weight': 'bold', 'size': 9})
     print(x_min,x_max)
-    #plt.xticks(np.arange(x_min, x_max, 0.005)), plt.yticks([])
     if title is not None:
         plt.title(title)
     if(show):
         plt.show()
     return plt
 
-def get_colors_helper(info,plot_type="person"):
-    if(type(plot_type)==tuple):
-        cat_i=plot_type[1]
-        def color_helper(i,y_i):
-            point_cat=int(info[i].split('_')[0])
-            print(point_cat,cat_i)
-            return 5*int(point_cat==(cat_i+1))
-        return color_helper
-    if(plot_type=="cat"):
-        return lambda i,y_i: int(info[i].split('_')[0])
+def get_colors_helper(info,plot_type="cat"):
+    if(type(plot_type)==np.ndarray):
+        return lambda i,y_i: plot_type[i][0]
+    index,fun=0,None
     if(plot_type=="full_person"):
-        return lambda i,y_i: int(info[i].split('_')[1])
-    return lambda i,y_i: int(info[i].split('_')[1]) %2       
+        index=1
+    if(plot_type=="person"):
+        index,fun=1,lambda x:x%2
+    if(type(plot_type)==tuple):
+        index,cat_i=0,plot_type[1]
+        fun=lambda x: int(x==(cat_i))
+    def helper(i,y_i):
+        desc=int(info[i].split('_')[index])
+        if(fun):
+            desc=fun(desc)
+        return desc
+    return helper    
 
 if __name__ == "__main__":
     common_path="../proj2/stats/feats"
