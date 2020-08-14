@@ -7,7 +7,7 @@ def show_inliners(paths,out_path):
     full_data,deep_data=data[0],data[2]
     inliners=get_inliners(deep_data)
     files.make_dir(out_path)
-    for i,date_i in enumerate(deep_data):
+    for i,date_i in enumerate(full_data):
         type_i= lambda j,y_j: inliners[j][i]
         out_i="%s/nn%d" % (out_path,i)
         plot_i=reduction.tsne_plot(date_i,show=False,color_helper=type_i)  
