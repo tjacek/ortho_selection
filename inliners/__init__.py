@@ -31,24 +31,47 @@ def base_voting(datasets):
     y_pred=learn.voting(votes,True)
     return [y_true,y_pred,votes[0][2]]  
 
-def inliner_voting(full_data,inliners):
-    results=learn.make_votes(full_data,True,"LR")
+def inliner_voting(full_data,inliners,binary=True):
+    results=learn.make_votes(full_data,binary,"LR")
     votes=learn.get_prob(results).T
+    if(not binary):
+        votes=np.swapaxes(votes,0,1)
     y_pred=[]
     for i,vote_i in enumerate(votes):
-        in_i=np.array([ inliners[j](i,cat_j) 
-                    for j,cat_j in enumerate(vote_i)])
-        y_pred.append(get_cat(vote_i,in_i))
+        if(binary):
+            cat_i=binary_voting(i,vote_i, inliners)
+        else:
+            cat_i=prob_voting(i,vote_i, inliners)
+        y_pred.append(cat_i)
     name=results[2]
     y_true=results[0][0]
     return y_true,y_pred,name
 
-def get_cat(vote_i,in_i):
+def prob_voting(i,vote_i, inliners):
+    cats=np.argmax(vote_i,axis=0)
+    in_i=np.array([ inliners[j](i,cat_j) 
+                    for j,cat_j in enumerate(cats)])
+    s_vote_i=[ vote_i[:,j] for j,in_j in enumerate(in_i)
+                    if(in_j==1)]
+    if(len(s_vote_i)==0):
+        s_vote_i=vote_i
+    s_vote_i=np.sum(s_vote_i,axis=0)
+    print(s_vote_i)
+    return np.argmax(s_vote_i)
+
+def binary_voting(i,vote_i, inliners):
+    in_i=np.array([ inliners[j](i,cat_j) 
+                    for j,cat_j in enumerate(vote_i)])
+    s_vote_i=select_votes(vote_i,in_i)
+    print(s_vote_i)    
+    s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
+    return np.argmax(s_vote_i)
+
+def select_votes(vote_i,in_i):
+    print(vote_i)
     if(np.sum(in_i)!=0):
         s_vote_i=[vote_ij 
             for vote_ij,in_ij in zip(vote_i,in_i)
                 if(in_ij==1)]
-    else:
-        s_vote_i=vote_i
-    s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
-    return np.argmax(s_vote_i)
+        return s_vote_i
+    return vote_i
