@@ -9,7 +9,7 @@ class Ensemble(object):
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
-        show_report(result,acc_only)
+        return show_report(result,acc_only)
 
     def get_result(self,in_path,binary=False,clf="LR",out_path=None):
         datasets=self.selection(in_path)
@@ -87,8 +87,10 @@ def total_selection(in_path):
 
 if __name__=="__main__":
     ensemble=get_ensemble("simple")#selection.complex_select)
-    paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
-#    paths=(["../dtw/skew",paths[0]],"../outliners/ens/sim/feats")
+    common_paths="../MSR_good/common/stats/feats"
+#    deep_path="../MSR_good/ens/sim/feats"
+    deep_path="../MSR_exp2/exp1/ens/feats"
+    paths=(common_paths,deep_path)
     ensemble(paths,clf="LR",out_path=None)
 #    acc=learn.report.cat_by_error("outliners/LR/stats_basic")
 #    print(acc)
