@@ -3,7 +3,8 @@ from sklearn import svm
 
 def get_inliners(deep_data):
     detectors=get_detector(deep_data)
-    return find_inliners(deep_data,detectors)
+    inliners=find_inliners(deep_data,detectors)
+    return [ lambda j,y_j: in_i[j] for in_i in inliners.T]
 
 def find_inliners(deep_data,detectors):
     test_data=[ data_i.split()[1] for data_i in deep_data]

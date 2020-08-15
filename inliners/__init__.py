@@ -5,10 +5,13 @@ import ens,tools,learn,reduction,files
 def show_inliners(paths,out_path):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
-    inliners=get_inliners(deep_data)
+    helpers=get_inliners(full_data)
+    show_template(full_data,out_path,helpers)
+
+def show_template(datasets,out_path,helpers):
     files.make_dir(out_path)
-    for i,date_i in enumerate(full_data):
-        type_i= lambda j,y_j: inliners[j][i]
+    for i,date_i in enumerate(datasets):
+        type_i= helpers[i]#lambda j,y_j: inliners[j][i]
         out_i="%s/nn%d" % (out_path,i)
         plot_i=reduction.tsne_plot(date_i,show=False,color_helper=type_i)  
         plot_i.savefig(out_i,dpi=1000)
