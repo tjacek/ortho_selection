@@ -20,8 +20,9 @@ def show_template(datasets,out_path,helpers):
 def inliner_ens(paths):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
-    inliners=get_inliners(deep_data)
+    inliners=get_inliners(full_data)
     result=inliner_voting(full_data,inliners)
+#    result=base_voting(full_data)
     ens.show_report(result)
 
 def base_voting(datasets):
@@ -34,15 +35,20 @@ def inliner_voting(full_data,inliners):
     results=learn.make_votes(full_data,True,"LR")
     votes=learn.get_prob(results).T
     y_pred=[]
-    for vote_i,in_i in zip(votes,inliners):
-#        print(vote_i)
-        s_vote_i=select_votes(vote_i, in_i)
-        s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
-        y_pred.append(np.argmax(s_vote_i)) 
+    for i,vote_i in enumerate(votes):
+        in_i=np.array([ inliners[j](i,cat_j) 
+                    for j,cat_j in enumerate(vote_i)])
+        y_pred.append(get_cat(vote_i,in_i))
     name=results[2]
     y_true=results[0][0]
     return y_true,y_pred,name
 
-def select_votes(vote_i, in_i):
-    return [vote_ij for vote_ij,in_ij in zip(vote_i,in_i)
-	            if(in_ij==1)]
+def get_cat(vote_i,in_i):
+    if(np.sum(in_i)!=0):
+        s_vote_i=[vote_ij 
+            for vote_ij,in_ij in zip(vote_i,in_i)
+                if(in_ij==1)]
+    else:
+        s_vote_i=vote_i
+    s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
+    return np.argmax(s_vote_i)
