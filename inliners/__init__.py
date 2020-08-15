@@ -1,5 +1,5 @@
 import numpy as np
-from inliners.one_svm import get_inliners
+from inliners.knn import get_inliners
 import ens,tools,learn,reduction,files
 
 def show_inliners(paths,out_path):
