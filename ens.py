@@ -1,5 +1,5 @@
 import learn,learn.report,feats
-import selection,tools,clf
+import selection,tools,clf,learn.votes
 import numpy as np
 import os.path
 
@@ -13,17 +13,18 @@ class Ensemble(object):
 
     def get_result(self,in_path,binary=False,clf="LR",out_path=None):
         datasets=self.selection(in_path)
-        if(out_path):
-            if(os.path.isdir(out_path)):
-                votes=learn.read_votes(out_path)
-            else:
-                votes=learn.make_votes(datasets,binary,clf)
-                learn.save_votes(votes,out_path)
-        else:
-            votes=learn.make_votes(datasets,binary,clf)
+        votes=get_votes(datasets,binary,clf,out_path)
         y_true=votes[0][0]
         y_pred=learn.voting(votes,binary)
         return [y_true,y_pred,votes[0][2]]  
+
+def get_votes(datasets,binary,clf,out_path):
+    if(out_path and os.path.isdir(out_path)):
+        return learn.votes.read_votes(out_path)
+    votes=learn.votes.make_votes(datasets,binary,clf)
+    if(out_path):        
+        learn.votes.save_votes(votes,out_path)    
+    return votes
 
 def show_report(result,acc_only=False):
     if(acc_only):
@@ -34,7 +35,6 @@ def show_report(result,acc_only=False):
         learn.report.show_result(result)
         learn.report.show_confusion(result)
  
-
 def get_ensemble(selection=None):
     if(type(selection)==str):
         return Ensemble(clf.get_selection(selection))
@@ -87,9 +87,9 @@ def total_selection(in_path):
 
 if __name__=="__main__":
     ensemble=get_ensemble("simple")#selection.complex_select)
-    common_paths="../MSR_good/common/stats/feats"
+    common_paths="../outliners/common/stats/feats"
 #    deep_path="../MSR_good/ens/sim/feats"
-    deep_path="../MSR_exp2/exp1/ens/feats"
+    deep_path="../outliners/ens/sim/feats"
     paths=(common_paths,deep_path)
     ensemble(paths,clf="LR",out_path=None)
 #    acc=learn.report.cat_by_error("outliners/LR/stats_basic")

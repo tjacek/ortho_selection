@@ -30,50 +30,18 @@ def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
         return accuracy_score(y_true,y_pred)
     return y_true,y_pred,votes[0][2]
 
-def make_votes(datasets,binary,clf):
-    if(type(clf)==list):
-        votes=[]
-        for clf_i in clf:
-            votes+=[train_model(data_i,binary,clf_i) for data_i in datasets]
-    else:
-        votes=[train_model(data_i,binary,clf) for data_i in datasets]
-    return votes
 
 def voting(results,binary):
     if(binary):
         votes=np.array([to_one_hot(result_i[1]) for result_i in results])
     else:
-        votes= get_prob(results)#np.array([result_i[1] for result_i in results])
+        votes= get_prob(results)
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
     return y_pred
 
 def get_prob(results):
     return np.array([result_i[1] for result_i in results])
-
-def save_votes(votes,out_path):
-    files.make_dir(out_path)
-    for i,vote_i in enumerate(votes):
-        out_i="%s/nn%d" % (out_path,i)
-        data_i=feats.FeatureSet(vote_i[1],vote_i[2])
-        data_i.save(out_i)
-
-def read_votes(in_path):
-    data=feats.read(in_path)
-    votes=[]
-    y_true=data[0].get_labels()
-    for data_i in data:
-        votes.append([y_true,data_i.X,data_i.info])
-    return votes
-
-def to_one_hot(y):
-    n_cats=max(y)+1
-    one_hot=[]    
-    for y_i in y:
-        vec_i=np.zeros(n_cats)
-        vec_i[y_i]=1
-        one_hot.append(vec_i)
-    return np.array(one_hot)
 
 def get_acc(common_path,deep_path,clf="LR"):
     datasets=tools.combined_dataset(common_path,deep_path)
