@@ -10,7 +10,7 @@ class InlinerEnsemble(object):
     def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
         data=tools.combined_dataset(in_path[0],in_path[1],binary) 
         inliners=get_inliners(data[0],self.k)
-        result=inliner_voting(data[0],inliners)
+        result=inliner_voting(data[0],inliners,binary,clf)
         ens.show_report(result,acc_only)
 
 def show_inliners(paths,out_path):
