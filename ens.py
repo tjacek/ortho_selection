@@ -7,7 +7,7 @@ class Ensemble(object):
     def __init__(self,selection=None):
         self.selection=selection
 
-    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
+    def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
         return show_report(result,acc_only)
 
