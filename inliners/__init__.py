@@ -3,6 +3,16 @@ from inliners.knn import get_inliners
 import ens,tools,learn,reduction,files
 import clf
 
+class InlinerEnsemble(object):
+    def __init__(self,k=5):
+        self.k=5
+
+    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
+        data=tools.combined_dataset(in_path[0],in_path[1],binary) 
+        inliners=get_inliners(data[0],self.k)
+        result=inliner_voting(data[0],inliners)
+        ens.show_report(result,acc_only)
+
 def show_inliners(paths,out_path):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
@@ -18,15 +28,12 @@ def show_template(datasets,out_path,helpers):
         plot_i.savefig(out_i,dpi=1000)
         plot_i.close()
 
-def inliner_ens(paths):
-    data=tools.combined_dataset(paths[0],paths[1],True) 
-    full_data,deep_data=data[0],data[2]
-#    sel=clf.get_selection("simple")
-#    full_data=sel(paths)
-    inliners=get_inliners(full_data)
-    result=inliner_voting(full_data,inliners)
-#    result=base_voting(full_data)
-    ens.show_report(result)
+#def inliner_ens(paths):
+#    data=tools.combined_dataset(paths[0],paths[1],True) 
+#    full_data,deep_data=data[0],data[2]
+#    inliners=get_inliners(full_data)
+#    result=inliner_voting(full_data,inliners)
+#    ens.show_report(result)
 
 def base_voting(datasets):
     votes=learn.make_votes(datasets,True,"LR")
@@ -34,8 +41,8 @@ def base_voting(datasets):
     y_pred=learn.voting(votes,True)
     return [y_true,y_pred,votes[0][2]]  
 
-def inliner_voting(full_data,inliners,binary=True):
-    results=learn.make_votes(full_data,binary,"LR")
+def inliner_voting(full_data,inliners,binary=True,clf="LR"):
+    results=learn.make_votes(full_data,binary,clf)
     votes=learn.get_prob(results).T
     if(not binary):
         votes=np.swapaxes(votes,0,1)
@@ -66,12 +73,12 @@ def binary_voting(i,vote_i, inliners):
     in_i=np.array([ inliners[j](i,cat_j) 
                     for j,cat_j in enumerate(vote_i)])
     s_vote_i=select_votes(vote_i,in_i)
-    print(s_vote_i)    
+#    print(s_vote_i)    
     s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
     return np.argmax(s_vote_i)
 
 def select_votes(vote_i,in_i):
-    print(vote_i)
+#    print(vote_i)
     if(np.sum(in_i)>1):
         s_vote_i=[vote_ij 
             for vote_ij,in_ij in zip(vote_i,in_i)
