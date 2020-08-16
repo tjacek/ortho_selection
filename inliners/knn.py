@@ -1,4 +1,3 @@
-#from sklearn.neighbors import NearestNeighbors
 from sklearn import neighbors
 
 def get_inliners(dataset,k=5):

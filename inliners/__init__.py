@@ -1,11 +1,12 @@
 import numpy as np
 from inliners.knn import get_inliners
 import ens,tools,learn,reduction,files
+import clf
 
 def show_inliners(paths,out_path):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
-    helpers=get_inliners(full_data)
+    helpers=get_inliners(full_data,k=5)
     show_template(full_data,out_path,helpers)
 
 def show_template(datasets,out_path,helpers):
@@ -20,6 +21,8 @@ def show_template(datasets,out_path,helpers):
 def inliner_ens(paths):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
+#    sel=clf.get_selection("simple")
+#    full_data=sel(paths)
     inliners=get_inliners(full_data)
     result=inliner_voting(full_data,inliners)
 #    result=base_voting(full_data)
@@ -53,7 +56,7 @@ def prob_voting(i,vote_i, inliners):
                     for j,cat_j in enumerate(cats)])
     s_vote_i=[ vote_i[:,j] for j,in_j in enumerate(in_i)
                     if(in_j==1)]
-    if(len(s_vote_i)==0):
+    if(len(s_vote_i)<3):
         s_vote_i=vote_i
     s_vote_i=np.sum(s_vote_i,axis=0)
     print(s_vote_i)
@@ -69,9 +72,15 @@ def binary_voting(i,vote_i, inliners):
 
 def select_votes(vote_i,in_i):
     print(vote_i)
-    if(np.sum(in_i)!=0):
+    if(np.sum(in_i)>1):
         s_vote_i=[vote_ij 
             for vote_ij,in_ij in zip(vote_i,in_i)
                 if(in_ij==1)]
+        if(each_unique(s_vote_i)):
+            return vote_i
         return s_vote_i
     return vote_i
+
+def each_unique(s_vote_i):
+    s=list(set(s_vote_i))
+    return len(s)==len(s_vote_i)
