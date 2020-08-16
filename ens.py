@@ -7,11 +7,11 @@ class Ensemble(object):
     def __init__(self,selection=None):
         self.selection=selection
 
-    def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
+    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
         return show_report(result,acc_only)
 
-    def get_result(self,in_path,binary=False,clf="LR",out_path=None):
+    def get_result(self,in_path,binary=True,clf="LR",out_path=None):
         datasets=self.selection(in_path)
         votes=get_votes(datasets,binary,clf,out_path)
         y_true=votes[0][0]
@@ -20,10 +20,13 @@ class Ensemble(object):
 
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
-        return learn.votes.read_votes(out_path)
-    votes=learn.votes.make_votes(datasets,binary,clf)
+        votes=learn.votes.read_votes(out_path)
+    else:
+        votes=learn.votes.make_votes(datasets,False,clf)
     if(out_path):        
         learn.votes.save_votes(votes,out_path)    
+    if(binary):
+        votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
     return votes
 
 def show_report(result,acc_only=False):

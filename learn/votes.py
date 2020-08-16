@@ -28,6 +28,15 @@ def read_votes(in_path):
     for data_i in data:
         votes.append([y_true,data_i.X,data_i.info])
     return votes
+ 
+def as_binary(result_i):
+    y_pred=result_i[1]
+    binary_pred=[]
+    for y_i in y_pred:
+        vec_i=np.zeros(y_i.shape)
+        vec_i[np.argmax(y_i)]=1
+        binary_pred.append(vec_i)
+    return result_i[0],binary_pred,result_i[2]
 
 def one_hot_result(result_i):
     return result_i[0],to_one_hot(result_i[1]),result_i[2]
