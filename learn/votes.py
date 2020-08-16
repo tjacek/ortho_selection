@@ -1,3 +1,4 @@
+import numpy as np
 import learn,files,feats
 
 def make_votes(datasets,binary,clf):
@@ -29,8 +30,7 @@ def read_votes(in_path):
     return votes
 
 def one_hot_result(result_i):
-    y_pred=[ to_one_hot(pred_j) for pred_j in result_i]
-    return result_i[0],y_pred,result_i[2]
+    return result_i[0],to_one_hot(result_i[1]),result_i[2]
 
 def to_one_hot(y):
     n_cats=max(y)+1

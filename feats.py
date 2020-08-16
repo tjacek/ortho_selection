@@ -62,7 +62,7 @@ class FeatureSet(object):
     def common_names(self,feat1):
         return list(set(self.info).intersection(set(feat1.info)))
 
-    def save(self,out_path,decimals=4):
+    def save(self,out_path,decimals=6):
         lines=[ np.array2string(x_i,separator=",",precision=decimals) for x_i in self.X]
         lines=[ line_i.replace('\n',"")+'#'+info_i 
                     for line_i,info_i in zip(lines,self.info)]

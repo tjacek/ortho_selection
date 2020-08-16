@@ -32,10 +32,11 @@ def ensemble_exp(datasets,binary=False,clf="LR",acc_only=True):
 
 
 def voting(results,binary):
-    if(binary):
-        votes=np.array([to_one_hot(result_i[1]) for result_i in results])
-    else:
-        votes= get_prob(results)
+#    if(binary):
+#        votes=np.array([to_one_hot(result_i[1]) for result_i in results])
+#    else:
+#        votes= get_prob(results)
+    votes=get_prob(results)
     votes=np.sum(votes,axis=0)
     y_pred=[np.argmax(vote_i) for vote_i in votes]
     return y_pred
