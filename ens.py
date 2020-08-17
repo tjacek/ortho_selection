@@ -7,7 +7,7 @@ class Ensemble(object):
     def __init__(self,selection=None):
         self.selection=selection
 
-    def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
+    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
         return show_report(result,acc_only)
 
@@ -32,7 +32,6 @@ def get_votes(datasets,binary,clf,out_path):
 def show_report(result,acc_only=False):
     if(acc_only):
         acc_i=learn.report.compute_score(result)
-        print(acc_i)
         return acc_i
     else:
         learn.report.show_result(result)
@@ -94,6 +93,5 @@ if __name__=="__main__":
 #    deep_path="../MSR_good/ens/sim/feats"
     deep_path="../outliners/ens/sim/feats"
     paths=(common_paths,deep_path)
-    ensemble(paths,clf="LR",out_path=None)
-#    acc=learn.report.cat_by_error("outliners/LR/stats_basic")
-#    print(acc)
+    acc_i=ensemble(paths,clf="LR",out_path=None)
+    print(acc_i)

@@ -24,7 +24,10 @@ class EnsExp(object):
                 new_paths=[ "%s/%s/feats" % pair 
                     for pair in zip(paths,(feat_i,feat_j))]
                 clf_ij=get_clf(clf_type)
-                self.ensemble(tuple(new_paths),clf=clf_ij,out_path=out_ij,binary=binary,acc_only=acc)
+                acc_ij=self.ensemble(tuple(new_paths),clf=clf_ij,out_path=out_ij,binary=binary,acc_only=acc)
+                if(self.prefix):
+                    acc_ij="%s,%s,%s,%s,%s" % (feat_i,feat_j,clf_ij,str(binary),acc_ij)
+                print(acc_ij)
 
 def get_ensemble(inliner=False,prefix=True):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
