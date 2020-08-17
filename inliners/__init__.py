@@ -52,24 +52,6 @@ def prob_voting(i,vote_i, inliners):
     s_vote_i=np.sum(s_vote_i,axis=0)
     return np.argmax(s_vote_i)
 
-#def binary_voting(i,vote_i, inliners):
-#    raise Exception(vote_i)
-#    in_i=np.array([ inliners[j](i,cat_j) 
-#                    for j,cat_j in enumerate(vote_i)])
-#    s_vote_i=select_votes(vote_i,in_i)
-#    s_vote_i=np.sum(learn.to_one_hot(s_vote_i),axis=0)
-#    return np.argmax(s_vote_i)
-
-#def select_votes(vote_i,in_i):
-#    if(np.sum(in_i)>1):
-#        s_vote_i=[vote_ij 
-#            for vote_ij,in_ij in zip(vote_i,in_i)
-#                if(in_ij==1)]
-#        if(each_unique(s_vote_i)):
-#            return vote_i
-#        return s_vote_i
-#    return vote_i
-
 def each_unique(s_vote_i):
     s=list(set(s_vote_i))
     return len(s)==len(s_vote_i)
