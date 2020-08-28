@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support,accuracy_score
@@ -7,6 +8,9 @@ import learn,tools,files
 def show_confusion(result):
     cf_matrix=confusion_matrix(result[0],result[1])
     print(cf_matrix)
+    score=[np.sqrt(np.sum(cf_i**2)/(np.sum(cf_i)**2))
+                for cf_i in cf_matrix]
+    print(sum(score)) 
 
 def show_result(y_true,y_pred=None,names=None):
     if((not y_pred) or (not names)):
