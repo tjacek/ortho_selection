@@ -15,17 +15,18 @@ def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
         plot_i.savefig(out_i,dpi=1000)
         plot_i.close()
 
-def tsne_plot(in_path,show=True,color_helper="cat"):
+def tsne_plot(in_path,show=True,color_helper="cat",names=False):
     feat_dataset= feats.read(in_path)[0] if(type(in_path)==str) else in_path
     feat_dataset=feat_dataset.split()[1]
     tsne=manifold.TSNE(n_components=2,perplexity=30)#init='pca', random_state=0)
     X=tsne.fit_transform(feat_dataset.X)
     y=feat_dataset.get_labels()
+    names=feat_dataset.info if(names) else None
     if(type(color_helper)==str or type(color_helper)==tuple): 
         color_helper=get_colors_helper(feat_dataset.info,color_helper)
-    return plot_embedding(X,y,title="tsne",color_helper=color_helper,show=show)
+    return plot_embedding(X,y,title="tsne",color_helper=color_helper,show=show,names=names)
 
-def plot_embedding(X,y,title="plot",color_helper=None,show=True):
+def plot_embedding(X,y,title="plot",color_helper=None,show=True,names=None):
     n_points=X.shape[0]
     x_min, x_max = np.min(X, 0), np.max(X, 0)
     X = (X - x_min) / (x_max - x_min)
@@ -35,9 +36,10 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     plt.figure()
     ax = plt.subplot(111)
 
+    rep= names if(names) else y
     for i in range(n_points):
         color_i= color_helper(i,y[i])
-        plt.text(X[i, 0], X[i, 1], str(y[i]),
+        plt.text(X[i, 0], X[i, 1],str(rep[i]),
                    color=plt.cm.tab20( color_i),
                    fontdict={'weight': 'bold', 'size': 9})
     print(x_min,x_max)
@@ -48,8 +50,6 @@ def plot_embedding(X,y,title="plot",color_helper=None,show=True):
     return plt
 
 def get_colors_helper(info,plot_type="cat"):
-#    if(type(plot_type)==np.ndarray):
-#        return lambda i,y_i: plot_type[i][0]
     index,fun=0,None
     if(plot_type=="full_person"):
         index=1
@@ -68,5 +68,5 @@ def get_colors_helper(info,plot_type="cat"):
 if __name__ == "__main__":
     common_path="../proj2/stats/feats"
     deep_path='../ens5/sim/feats'
-    all_plots(common_path,deep_path,"plots2","cat")
-#    tsne_plot('../proj2/sim/feats',show=True,plot_type="cat")
+#    all_plots(common_path,deep_path,"plots2","cat")
+    tsne_plot('../outliners/common/sim/feats',show=True,color_helper="cat",names=True)
