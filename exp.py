@@ -1,12 +1,14 @@
+import itertools
 import files,ens,clf,inliners
 
 clf_type="SVC"
 feats=["stats","basic","sim"]
-common_path="good/MHAD/common"
-deep_path="good/MHAD/ens"
-out="MHAD"
-acc=True
-binary=True
+common_path="../simple/fore/exp3"
+deep_path="../simple/fore/exp3/ens"
+out="simple"
+acc=False
+binary=False
+inliner=False
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False):
@@ -28,6 +30,13 @@ class EnsExp(object):
                 if(self.prefix):
                     acc_ij="%s,%s,%s,%s,%s" % (feat_i,feat_j,clf_ij,str(binary),acc_ij)
                 print(acc_ij)
+
+    def product_exp(self,paths,out):
+        args= [[True,False],["LR","SVC"]]
+        arg_combs= list(itertools.product(*args))
+        for binary_i,clf_i in arg_combs:
+            print(clf_i)
+            self(paths,out,binary_i,clf_i,True)
 
 def get_ensemble(inliner=False,prefix=True):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
@@ -61,7 +70,8 @@ def get_clf(raw_clf):
         return ["LR","SVC"]
     return raw_clf                
 
-ensemble=get_ensemble()
-ensemble((common_path,deep_path),out,binary,clf_type,acc)
+ensemble=get_ensemble(inliner)
+#ensemble((common_path,deep_path),out,binary,clf_type,acc)
+ensemble.product_exp((common_path,deep_path),out)
 #agum_exp("../smooth/gap","../smooth/gap/ens","gap",clf_type="LR",acc=False)
 #agum_exp("../smooth/common","../smooth/ens","raw",clf_type="LR",acc=False)
