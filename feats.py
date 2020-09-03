@@ -19,7 +19,6 @@ class FeatureSet(object):
         feat1={ name_i:feat1[name_i] for name_i in new_info}
         feat2={ name_i:feat2[name_i] for name_i in new_info}
         new_X=np.concatenate([from_dict(feat1).X,from_dict(feat2).X],axis=1)
-        raise Exception(new_X.shape)
         return FeatureSet(new_X,new_info)
 
     def __len__(self):
