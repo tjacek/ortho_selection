@@ -3,17 +3,19 @@ import files,ens,clf,inliners
 
 clf_type="SVC"
 feats=["stats","basic","sim"]
-common_path="../simple/fore/exp3"
+common_path="../simple/fore/agum1"
 deep_path="../simple/fore/exp3/ens"
-out="simple"
-acc=False
+out="agum"
+acc=True
 binary=False
-inliner=False
+inliner=True
 
 class EnsExp(object):
-    def __init__(self,ensemble,prefix=False):
+    def __init__(self,ensemble,prefix=False,feats=None):
+        if(not feats):
+            feats=["stats","basic","sim"]
         self.ensemble=ensemble
-        self.feats=["stats","basic","sim"]
+        self.feats=feats
         self.prefix=prefix
 
     def __call__(self,paths,out,binary=True,clf_type="LR",acc=True):
@@ -42,21 +44,9 @@ def get_ensemble(inliner=False,prefix=True):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
     return EnsExp(ensemble,prefix)
 
-#def agum_exp(common_path,ens_path,out,clf_type="LR",acc=True):
-#    ensemble=ens.get_ensemble()
-#    feats=[None,"stats","basic"]
-#    files.make_dir(out)
-#    files.make_dir("%s/%s" % (out,clf_type))
-#    for feat_i in feats:
-#        for feat_j in [None,"basic"]:
-#            hc_path=get_path(common_path,feat_i)
-#            binary_path=get_path(ens_path,feat_j)
-#            if(hc_path or binary_path):
-#                out_ij="%s/%s/%s_%s" % (out,clf_type,feat_i,feat_j)
-#                print(out_ij)
-#                clf_ij=get_clf(clf_type)
-#                in_paths_i=(hc_path,binary_path)
-#                ensemble(in_paths_i,clf=clf_ij,out_path=out_ij,acc_only=acc)
+def get_agum_ensemble(inliner=False,prefix=True):
+    ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
+    return EnsExp(ensemble,prefix,feats=["stats","basic"])
 
 def get_path(common_path,feat_i):
     if(feat_i):
@@ -70,7 +60,7 @@ def get_clf(raw_clf):
         return ["LR","SVC"]
     return raw_clf                
 
-ensemble=get_ensemble(inliner)
+ensemble=get_agum_ensemble(inliner)
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out)
 #agum_exp("../smooth/gap","../smooth/gap/ens","gap",clf_type="LR",acc=False)
