@@ -3,17 +3,32 @@ from sklearn import manifold
 import matplotlib.pyplot as plt
 import numpy as np
 
-def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
-    datasets=tools.combined_dataset(common_path,deep_path)
-    if(not out_path):
-        out_path='plots_'+in_path
+def show_template(datasets,out_path,helpers):
     files.make_dir(out_path)
     for i,date_i in enumerate(datasets):
-        type_i=(plot_type,i)  if(plot_type=="single") else plot_type
+        type_i= helpers(i)
         out_i="%s/nn%d" % (out_path,i)
         plot_i=tsne_plot(date_i,show=False,color_helper=type_i)  
         plot_i.savefig(out_i,dpi=1000)
         plot_i.close()
+
+def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
+    datasets=tools.combined_dataset(common_path,deep_path)
+    if(not out_path):
+        out_path='plots_'+in_path
+    if(plot_type=="single"):
+        helper=lambda i:("single",i)
+    else:
+        helper=lambda i:plot_type
+    show_template(datasets,out_path,helper)
+
+#    files.make_dir(out_path)
+#    for i,date_i in enumerate(datasets):
+#        type_i=(plot_type,i)  if(plot_type=="single") else plot_type
+#        out_i="%s/nn%d" % (out_path,i)
+#        plot_i=tsne_plot(date_i,show=False,color_helper=type_i)  
+#        plot_i.savefig(out_i,dpi=1000)
+#        plot_i.close()
 
 def tsne_plot(in_path,show=True,color_helper="cat",names=False):
     feat_dataset= feats.read(in_path)[0] if(type(in_path)==str) else in_path
@@ -66,7 +81,7 @@ def get_colors_helper(info,plot_type="cat"):
     return helper    
 
 if __name__ == "__main__":
-    common_path="../proj2/stats/feats"
-    deep_path='../ens5/sim/feats'
-#    all_plots(common_path,deep_path,"plots2","cat")
-    tsne_plot('../outliners/common/sim/feats',show=True,color_helper="cat",names=True)
+    common_path=None
+    deep_path='visual/sim'
+    all_plots(common_path,deep_path,"visual/plots","cat")
+#    tsne_plot('..//common/sim/feats',show=True,color_helper="cat",names=True)

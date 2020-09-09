@@ -17,16 +17,7 @@ def show_inliners(paths,out_path):
     data=tools.combined_dataset(paths[0],paths[1],True) 
     full_data,deep_data=data[0],data[2]
     helpers=get_inliners(full_data,k=5)
-    show_template(full_data,out_path,helpers)
-
-def show_template(datasets,out_path,helpers):
-    files.make_dir(out_path)
-    for i,date_i in enumerate(datasets):
-        type_i= helpers[i]#lambda j,y_j: inliners[j][i]
-        out_i="%s/nn%d" % (out_path,i)
-        plot_i=reduction.tsne_plot(date_i,show=False,color_helper=type_i)  
-        plot_i.savefig(out_i,dpi=1000)
-        plot_i.close()
+    reduction.show_template(full_data,out_path,helpers)
 
 def inliner_voting(full_data,inliners,binary=True,clf="LR",out_path=None):
     results=ens.get_votes(full_data,binary,clf,out_path)
