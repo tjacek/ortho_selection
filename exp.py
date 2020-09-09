@@ -3,22 +3,22 @@ import files,ens,clf,inliners
 
 clf_type="LR"
 feats=["stats","basic","sim"]
-common_path="../good/MHAD/common"
-deep_path="../good/MHAD/ens"
-out="MSR"
+common_path="exp_agum/agum/"
+deep_path="../../agum/outliners/ens/"
+out="agum"
 acc=True
 binary=False
-inliner=False
+inliner=True
 
 class EnsExp(object):
-    def __init__(self,ensemble,prefix=False,common=None,ens=None):
+    def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
         if(not common):
             common=["stats","basic","sim"]
-        if(not ens):
-            ens=["stats","basic","sim"]
+        if(not ens_feats):
+            ens_feats=["stats","basic","sim"]
         self.ensemble=ensemble
         self.common=common
-        self.ens=ens
+        self.ens=ens_feats
         self.prefix=prefix
 
     def __call__(self,paths,out,binary=True,clf_type="LR",acc=True):
@@ -44,11 +44,12 @@ class EnsExp(object):
             self(paths,out,binary_i,clf_i,True)
 
 def get_ensemble(inliner=False,prefix=True,agum=False):
+#    import ens
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
     if(agum):
         common=["stats","basic"]
-        ens=["stats","basic","sim"]
-        return EnsExp(ensemble,prefix,common,ens)
+        ens_feats=["stats","basic","sim"]
+        return EnsExp(ensemble,prefix,common,ens_feats)
     return EnsExp(ensemble,prefix)
 
 def get_path(common_path,feat_i):
@@ -62,8 +63,8 @@ def get_clf(raw_clf):
     if(raw_clf=="mixed"):
         return ["LR","SVC"]
     return raw_clf                
-
-ensemble=get_ensemble(inliner)
+import ens
+ensemble=get_ensemble(inliner,agum=True)
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out)
 #agum_exp("../smooth/gap","../smooth/gap/ens","gap",clf_type="LR",acc=False)
