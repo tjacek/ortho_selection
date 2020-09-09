@@ -5,25 +5,28 @@ clf_type="LR"
 feats=["stats","basic","sim"]
 common_path="../good/MHAD/common"
 deep_path="../good/MHAD/ens"
-out="MHAD"
+out="MSR"
 acc=True
 binary=False
 inliner=False
 
 class EnsExp(object):
-    def __init__(self,ensemble,prefix=False,feats=None):
-        if(not feats):
-            feats=["stats","basic","sim"]
+    def __init__(self,ensemble,prefix=False,common=None,ens=None):
+        if(not common):
+            common=["stats","basic","sim"]
+        if(not ens):
+            ens=["stats","basic","sim"]
         self.ensemble=ensemble
-        self.feats=feats
+        self.common=common
+        self.ens=ens
         self.prefix=prefix
 
     def __call__(self,paths,out,binary=True,clf_type="LR",acc=True):
         files.make_dir(out)
         files.make_dir("%s/%s" % (out,clf_type))
         print(out)
-        for feat_i in self.feats:
-            for feat_j in self.feats:
+        for feat_i in self.common:
+            for feat_j in self.ens:
                 out_ij="%s/%s/%s_%s" % (out,clf_type,feat_i,feat_j)
                 new_paths=[ "%s/%s/feats" % pair 
                     for pair in zip(paths,(feat_i,feat_j))]
@@ -42,8 +45,10 @@ class EnsExp(object):
 
 def get_ensemble(inliner=False,prefix=True,agum=False):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
-    if(agum):    
-        return EnsExp(ensemble,prefix,feats=["stats","basic"])
+    if(agum):
+        common=["stats","basic"]
+        ens=["stats","basic","sim"]
+        return EnsExp(ensemble,prefix,common,ens)
     return EnsExp(ensemble,prefix)
 
 def get_path(common_path,feat_i):
