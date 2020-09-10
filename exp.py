@@ -3,12 +3,12 @@ import files,ens,clf,inliners
 
 clf_type="LR"
 feats=["stats","basic","sim"]
-common_path="exp_agum/agum/"
+common_path=["exp_agum/agum/","exp_agum/scale/"]
 deep_path="../../agum/outliners/ens/"
-out="agum"
+out="mixed"
 acc=True
 binary=False
-inliner=True
+inliner=False
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
@@ -28,8 +28,7 @@ class EnsExp(object):
         for feat_i in self.common:
             for feat_j in self.ens:
                 out_ij="%s/%s/%s_%s" % (out,clf_type,feat_i,feat_j)
-                new_paths=[ "%s/%s/feats" % pair 
-                    for pair in zip(paths,(feat_i,feat_j))]
+                new_paths=get_paths(paths,feat_i,feat_j)
                 clf_ij=get_clf(clf_type)
                 acc_ij=self.ensemble(tuple(new_paths),clf=clf_ij,out_path=out_ij,binary=binary,acc_only=acc)
                 if(self.prefix):
@@ -43,8 +42,18 @@ class EnsExp(object):
             print(clf_i)
             self(paths,out,binary_i,clf_i,True)
 
+def get_paths(old_paths,common,deep):
+    prefix_common,prefix_deep=old_paths
+    deep_path="%s/%s/feats" % (prefix_deep,deep)
+    if(type(prefix_common)==list):
+        common_path=["%s/%s/feats" % (common_i,common) 
+                for common_i in prefix_common]
+    else:
+        common_path="%s/%s/feats" % (prefix_common,common)
+    return common_path,deep_path
+
+
 def get_ensemble(inliner=False,prefix=True,agum=False):
-#    import ens
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
     if(agum):
         common=["stats","basic"]
@@ -52,18 +61,11 @@ def get_ensemble(inliner=False,prefix=True,agum=False):
         return EnsExp(ensemble,prefix,common,ens_feats)
     return EnsExp(ensemble,prefix)
 
-def get_path(common_path,feat_i):
-    if(feat_i):
-        hc_path="%s/%s/feats" % (common_path,feat_i)
-    else:
-        hc_path=None
-    return hc_path
-
 def get_clf(raw_clf):
     if(raw_clf=="mixed"):
         return ["LR","SVC"]
     return raw_clf                
-import ens
+
 ensemble=get_ensemble(inliner,agum=True)
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out)

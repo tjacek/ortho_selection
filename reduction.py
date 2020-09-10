@@ -22,14 +22,6 @@ def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
         helper=lambda i:plot_type
     show_template(datasets,out_path,helper)
 
-#    files.make_dir(out_path)
-#    for i,date_i in enumerate(datasets):
-#        type_i=(plot_type,i)  if(plot_type=="single") else plot_type
-#        out_i="%s/nn%d" % (out_path,i)
-#        plot_i=tsne_plot(date_i,show=False,color_helper=type_i)  
-#        plot_i.savefig(out_i,dpi=1000)
-#        plot_i.close()
-
 def tsne_plot(in_path,show=True,color_helper="cat",names=False):
     feat_dataset= feats.read(in_path)[0] if(type(in_path)==str) else in_path
     feat_dataset=feat_dataset.split()[1]
