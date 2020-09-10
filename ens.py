@@ -23,7 +23,7 @@ def get_votes(datasets,binary,clf,out_path):
         votes=learn.votes.read_votes(out_path)
     else:
         votes=learn.votes.make_votes(datasets,False,clf)
-    if(out_path):        
+    if(out_path):
         learn.votes.save_votes(votes,out_path)    
     if(binary):
         votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
@@ -85,13 +85,14 @@ def total_selection(in_path):
     datasets=[ common+data_i
                 for i,data_i in enumerate(deep_data)
                     if(info[i]>-1)]
-    return datasets
+    return datasetst
 
 if __name__=="__main__":
-    ensemble=get_ensemble("simple")#selection.complex_select)
-    common_paths="../outliners/common/stats/feats"
+    ensemble=get_ensemble()#selection.complex_select)
+    common_paths="exp_agum/agum/basic/feats"
+    common_paths1="exp_agum/scale/basic/feats"
 #    deep_path="../MSR_good/ens/sim/feats"
-    deep_path="../outliners/ens/sim/feats"
-    paths=(common_paths,deep_path)
+    deep_path="../../agum/outliners/ens/sim/feats"
+    paths=([common_paths,common_paths1],deep_path)
     acc_i=ensemble(paths,clf="LR",out_path=None)
     print(acc_i)

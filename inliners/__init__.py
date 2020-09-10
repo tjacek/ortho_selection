@@ -8,7 +8,7 @@ class InlinerEnsemble(object):
         self.k=5
 
     def __call__(self,in_path,binary=False,clf="LR",acc_only=False,out_path=None):
-        data=tools.combined_dataset(in_path[0],in_path[1]) 
+        data=tools.read_datasets(in_path)
         inliners=get_inliners(data,self.k)
         result=inliner_voting(data,inliners,binary,clf,out_path)
         return ens.show_report(result,acc_only)

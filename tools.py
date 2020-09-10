@@ -1,3 +1,4 @@
+import itertools
 import feats
 
 def filtered_dict(names,dic):
@@ -26,7 +27,9 @@ def person_cats(y):
 
 def read_datasets(in_path):
     if(type(in_path)==tuple):
-        common_path,deep_path=in_path   
+        common_path,deep_path=in_path
+        if(type(common_path)==list):
+            return multi_dataset(common_path,deep_path) 
         return combined_dataset(common_path,deep_path)
     return feats.read(in_path)
 
@@ -42,3 +45,8 @@ def combined_dataset(common_path,deep_path,sub_datasets=False):
     if(sub_datasets):
         return datasets,common_data,deep_data
     return datasets
+
+def multi_dataset(common_path,deep_path):
+    datasets=[combined_dataset(common_i,deep_path)
+                for common_i in common_path]
+    return itertools.chain.from_iterable(datasets)

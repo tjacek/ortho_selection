@@ -8,7 +8,7 @@ deep_path="../../agum/outliners/ens/"
 out="mixed"
 acc=True
 binary=False
-inliner=False
+inliner=True
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
