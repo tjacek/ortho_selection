@@ -22,6 +22,14 @@ def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
         helper=lambda i:plot_type
     show_template(datasets,out_path,helper)
 
+def split_plot(in_path):
+    dataset=feats.read(in_path)[0]
+    def helper(i,y_i):
+        name_i=dataset.info[i]
+        person_i=int(name_i.split("_")[1])
+        return (person_i % 2)
+    tsne_plot(dataset,show=True,color_helper=helper)
+
 def tsne_plot(in_path,show=True,color_helper="cat",names=False):
     feat_dataset= feats.read(in_path)[0] if(type(in_path)==str) else in_path
     feat_dataset=feat_dataset.split()[1]
@@ -75,5 +83,5 @@ def get_colors_helper(info,plot_type="cat"):
 if __name__ == "__main__":
     common_path=None
     deep_path='visual/sim'
-    all_plots(common_path,deep_path,"visual/plots","cat")
-#    tsne_plot('..//common/sim/feats',show=True,color_helper="cat",names=True)
+#    all_plots(common_path,deep_path,"visual/plots","cat")
+    split_plot('visual/sim/nn0')
