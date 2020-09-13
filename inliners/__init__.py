@@ -13,12 +13,6 @@ class InlinerEnsemble(object):
         result=inliner_voting(data,inliners,binary,clf,out_path)
         return ens.show_report(result,acc_only)
 
-def show_inliners(paths,out_path):
-    data=tools.combined_dataset(paths[0],paths[1],True) 
-    full_data,deep_data=data[0],data[2]
-    helpers=get_inliners(full_data,k=5)
-    reduction.show_template(full_data,out_path,helpers)
-
 def inliner_voting(full_data,inliners,binary=True,clf="LR",out_path=None):
     results=ens.get_votes(full_data,binary,clf,out_path)
     votes=[result_i[1] for result_i in results]

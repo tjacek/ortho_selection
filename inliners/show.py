@@ -1,4 +1,5 @@
-import feats,reduction,inliners.knn
+import feats,reduction,tools
+import inliners,inliners.knn
 
 def visual(in_path):
     dataset=feats.read(in_path)[0]
@@ -12,10 +13,8 @@ def visual(in_path):
         return in_test
     reduction.tsne_plot(dataset,show=True,color_helper=helper)
 
-def split_plot(in_path):
-    dataset=feats.read(in_path)[0]
-    def helper(i,y_i):
-        name_i=dataset.info[i]
-        person_i=int(name_i.split("_")[1])
-        return (person_i % 2)
-    tsne_plot(dataset,show=True,color_helper=helper)
+def show_inliners(paths,out_path):
+    data=tools.combined_dataset(paths[0],paths[1],True) 
+    full_data,deep_data=data[0],data[2]
+    helpers=inliners.get_inliners(full_data,k=5)
+    reduction.show_template(full_data,out_path,helpers)
