@@ -1,14 +1,19 @@
 import itertools
 import files,ens,clf,inliners
 
-clf_type="LR"
-feats=["stats","basic","sim"]
-common_path=["third_exp/agum1","third_exp/simple"]#["exp_agum/agum/","exp_agum/scale/"]
-deep_path="third_exp/ens/"
-out="MSR/mixed"
+in_dict="third_exp"
+out_dict="third"
+common="scale"
+
+if(common=="mixed"):
+    common_path=["%s/%s" % (in_dict,feat_i) 
+                    for feat_i in ["agum","scale"]]
+else:
+    common_path= "%s/%s" % (in_dict,common) #["MSR_exp/agum","MSR_exp/scale"]
+deep_path="%s/ens/" % in_dict
+out="%s/%s" % (out_dict,common)
 acc=True
-binary=False
-inliner=False
+inliner=False 
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
@@ -36,7 +41,7 @@ class EnsExp(object):
                 print(acc_ij)
 
     def product_exp(self,paths,out,acc=True):
-        args= [[True,False],["LR"]]#,"SVC"]]
+        args= [[True,False],["LR","SVC"]]
         arg_combs= list(itertools.product(*args))
         for binary_i,clf_i in arg_combs:
             print(clf_i)
