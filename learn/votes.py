@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 import learn,files,feats
 
 def make_votes(datasets,binary,clf):
@@ -28,7 +29,13 @@ def read_votes(in_path):
     for data_i in data:
         votes.append([y_true,data_i.X,data_i.info])
     return votes
- 
+
+def unify_votes(in_paths,out_path):
+    assert( type(in_paths)==list)
+    votes=[read_votes(path_i) for path_i in in_paths]
+    votes=list(itertools.chain.from_iterable(votes))
+    save_votes(votes,out_path)
+
 def as_binary(result_i):
     y_pred=result_i[1]
     binary_pred=[]

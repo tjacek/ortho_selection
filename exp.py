@@ -1,9 +1,10 @@
-import itertools
+import os.path,itertools
 import files,ens,clf,inliners
+import learn.votes
 
-in_dict="third_exp"
-out_dict="third"
-common="scale"
+in_dict="MHAD_exp"
+out_dict="MHAD"
+common="mixed"
 
 if(common=="mixed"):
     common_path=["%s/%s" % (in_dict,feat_i) 
@@ -13,7 +14,7 @@ else:
 deep_path="%s/ens/" % in_dict
 out="%s/%s" % (out_dict,common)
 acc=True
-inliner=False 
+inliner=True 
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
@@ -62,7 +63,7 @@ def get_ensemble(inliner=False,prefix=True,agum=False):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
     if(agum):
         common=["stats","basic"]
-        ens_feats=["stats","basic","sim"]
+        ens_feats=["stats","basic"]#,"sim"]
         return EnsExp(ensemble,prefix,common,ens_feats)
     return EnsExp(ensemble,prefix)
 
@@ -71,8 +72,19 @@ def get_clf(raw_clf):
         return ["LR","SVC"]
     return raw_clf                
 
+def unify_votes(paths,out_path):
+    paths=[files.top_files(path_i) 
+            for path_i in paths ]
+    paths=list(map(list, zip(*paths)))
+    for path0,path1 in paths:
+        out_i="%s/%s" % (out_path,path0.split("/")[-1])
+        learn.votes.unify_votes([path0,path1],out_i)
+
+paths=["MHAD/agum/SVC","MHAD/scale/SVC"]
+out_path="MHAD/mixed/SVC"
+
+#unify_votes(paths,out_path)
+
 ensemble=get_ensemble(inliner,agum=True)
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out,acc=acc)
-#agum_exp("../smooth/gap","../smooth/gap/ens","gap",clf_type="LR",acc=False)
-#agum_exp("../smooth/common","../smooth/ens","raw",clf_type="LR",acc=False)
