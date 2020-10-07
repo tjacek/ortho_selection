@@ -1,10 +1,10 @@
-import os.path,itertools
+import os.path#,itertools
 import files,ens,clf,inliners
 import learn.votes
 
 in_dict="MSR_exp"
 out_dict="MSR"
-common="dtw"
+common="scale"
 
 if(common=="mixed"):
     common_path=["%s/%s" % (in_dict,feat_i) 
@@ -13,7 +13,7 @@ else:
     common_path= "%s/%s" % (in_dict,common) #["MSR_exp/agum","MSR_exp/scale"]
 deep_path="%s/ens/" % in_dict
 out="%s/%s" % (out_dict,common)
-acc=False
+acc=True
 inliner=False 
 
 class EnsExp(object):
@@ -43,7 +43,7 @@ class EnsExp(object):
 
     def product_exp(self,paths,out,acc=True):
         args= [[True,False],["LR","SVC"]]
-        arg_combs= list(itertools.product(*args))
+        arg_combs=files.iter_product(args) #list(itertools.product(*args))
         for binary_i,clf_i in arg_combs:
             print(clf_i)
             self(paths,out,binary_i,clf_i,acc=acc)
@@ -51,13 +51,21 @@ class EnsExp(object):
 def get_paths(old_paths,common,deep):
     prefix_common,prefix_deep=old_paths
     deep_path="%s/%s/feats" % (prefix_deep,deep)
-    if(type(prefix_common)==list):
-        common_path=["%s/%s/feats" % (common_i,common) 
-                for common_i in prefix_common]
+    if(type(common)==tuple):
+        common_path=["%s/%s/feats" % (prefix_common,common_i) 
+                        for common_i in common]
     else:
         common_path="%s/%s/feats" % (prefix_common,common)
     return common_path,deep_path
-
+#def get_paths(old_paths,common,deep):
+#    prefix_common,prefix_deep=old_paths
+#    deep_path="%s/%s/feats" % (prefix_deep,deep)
+#    if(type(prefix_common)==list):
+#        common_path=["%s/%s/feats" % (common_i,common) 
+#                for common_i in prefix_common]
+#    else:
+#        common_path="%s/%s/feats" % (prefix_common,common)
+#    return common_path,deep_path
 
 def get_ensemble(inliner=False,prefix=True,feats_type=False):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
@@ -69,6 +77,10 @@ def get_feat_types(feats_type):
         return ["stats","basic"],["stats","basic"]
     if(feats_type=="dtw"):
         return ["max_z"],["stats","basic"]
+    if(feats_type=="multi"):
+        multi=[["max_z"],["stats","basic"]]
+        multi=files.iter_product(multi)
+        return multi,["stats","basic"]
     return None,None
 
 def get_clf(raw_clf):
@@ -89,6 +101,6 @@ out_path="MHAD/mixed/SVC"
 
 #unify_votes(paths,out_path)
 
-ensemble=get_ensemble(inliner,feats_type="dtw")
+ensemble=get_ensemble(inliner,feats_type="multi")
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out,acc=acc)

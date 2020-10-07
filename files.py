@@ -1,4 +1,4 @@
-import os,re
+import os,re,itertools
 
 def top_files(path):
     paths=[ path+'/'+file_i for file_i in os.listdir(path)]
@@ -32,6 +32,9 @@ def clean_str(name_i):
     name_i=name_i.split("/")[-1]
     digits=[ str(int(digit_i)) for digit_i in re.findall(r'\d+',name_i)]
     return "_".join(digits)
+
+def iter_product(args):
+    return list(itertools.product(*args))
 
 def ens_template(in_path,out_path,fun):
     make_dir(out_path)
