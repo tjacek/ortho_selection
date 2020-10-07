@@ -59,17 +59,17 @@ def get_paths(old_paths,common,deep):
     return common_path,deep_path
 
 
-def get_ensemble(inliner=False,prefix=True,ens_type=False):
+def get_ensemble(inliner=False,prefix=True,feats_type=False):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
-    if(agum=="agum"):
-        common=["stats","basic"]
-        ens_feats=["stats","basic"]#,"sim"]
-        return EnsExp(ensemble,prefix,common,ens_feats)
-    if(agum=="dtw"):
-        common=["max_z"]
-        ens_feats=["stats","basic"]#,"sim"]
-        return EnsExp(ensemble,prefix,common,ens_feats)
-    return EnsExp(ensemble,prefix)
+    common,ens_feats=get_feat_types(feats_type)
+    return EnsExp(ensemble,prefix,common,ens_feats)
+
+def get_feat_types(feats_type):
+    if(feats_type=="agum"):
+        return ["stats","basic"],["stats","basic"]
+    if(feats_type=="dtw"):
+        return ["max_z"],["stats","basic"]
+    return None,None
 
 def get_clf(raw_clf):
     if(raw_clf=="mixed"):
@@ -89,6 +89,6 @@ out_path="MHAD/mixed/SVC"
 
 #unify_votes(paths,out_path)
 
-ensemble=get_ensemble(inliner,ens_type="dtw")
+ensemble=get_ensemble(inliner,feats_type="dtw")
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out,acc=acc)
