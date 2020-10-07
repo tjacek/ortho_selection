@@ -2,9 +2,9 @@ import os.path,itertools
 import files,ens,clf,inliners
 import learn.votes
 
-in_dict="MHAD_exp"
-out_dict="MHAD"
-common="mixed"
+in_dict="MSR_exp"
+out_dict="MSR"
+common="dtw"
 
 if(common=="mixed"):
     common_path=["%s/%s" % (in_dict,feat_i) 
@@ -13,8 +13,8 @@ else:
     common_path= "%s/%s" % (in_dict,common) #["MSR_exp/agum","MSR_exp/scale"]
 deep_path="%s/ens/" % in_dict
 out="%s/%s" % (out_dict,common)
-acc=True
-inliner=True 
+acc=False
+inliner=False 
 
 class EnsExp(object):
     def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
@@ -59,10 +59,14 @@ def get_paths(old_paths,common,deep):
     return common_path,deep_path
 
 
-def get_ensemble(inliner=False,prefix=True,agum=False):
+def get_ensemble(inliner=False,prefix=True,ens_type=False):
     ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
-    if(agum):
+    if(agum=="agum"):
         common=["stats","basic"]
+        ens_feats=["stats","basic"]#,"sim"]
+        return EnsExp(ensemble,prefix,common,ens_feats)
+    if(agum=="dtw"):
+        common=["max_z"]
         ens_feats=["stats","basic"]#,"sim"]
         return EnsExp(ensemble,prefix,common,ens_feats)
     return EnsExp(ensemble,prefix)
@@ -85,6 +89,6 @@ out_path="MHAD/mixed/SVC"
 
 #unify_votes(paths,out_path)
 
-ensemble=get_ensemble(inliner,agum=True)
+ensemble=get_ensemble(inliner,ens_type="dtw")
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
 ensemble.product_exp((common_path,deep_path),out,acc=acc)
