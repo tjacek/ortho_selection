@@ -15,6 +15,13 @@ def bottom_files(path,full_paths=True):
     all_paths.sort(key=natural_keys)        
     return all_paths
 
+def bottom_dict(path):
+    bottom_dict=[]
+    for root, directories, filenames in os.walk(path):
+        if(not directories):
+            bottom_dict.append(root)
+    return bottom_dict
+
 def natural_sort(l):
     return sorted(l,key=natural_keys)
 
