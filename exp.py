@@ -4,7 +4,7 @@ import learn.votes
 
 in_dict="MSR_exp"
 out_dict="MSR"
-common="scale"
+common="dtw"
 
 if(common=="mixed"):
     common_path=["%s/%s" % (in_dict,feat_i) 
@@ -17,7 +17,8 @@ acc=True
 inliner=False 
 
 class EnsExp(object):
-    def __init__(self,ensemble,prefix=False,common=None,ens_feats=None):
+    def __init__(self,ensemble,prefix=False,common=None,
+                    ens_feats=None):
         if(not common):
             common=["stats","basic","sim"]
         if(not ens_feats):
@@ -36,11 +37,13 @@ class EnsExp(object):
                 out_ij="%s/%s/%s_%s" % (out,clf_type,feat_i,feat_j)
                 new_paths=get_paths(paths,feat_i,feat_j)
                 clf_ij=get_clf(clf_type)
-                acc_ij=self.ensemble(tuple(new_paths),clf=clf_ij,out_path=out_ij,binary=binary,acc_only=acc)
+                acc_ij=self.ensemble(tuple(new_paths),clf=clf_ij,
+                    out_path=out_ij,binary=binary,acc_only=acc)
+#                acc_ij=self.get_acc(new_paths,clf_ij,out_ij,binary,acc)
                 if(self.prefix):
                     acc_ij="%s,%s,%s,%s,%s" % (feat_i,feat_j,clf_ij,str(binary),acc_ij)
                 print(acc_ij)
-
+    
     def product_exp(self,paths,out,acc=True):
         args= [[True,False],["LR","SVC"]]
         arg_combs=files.iter_product(args) #list(itertools.product(*args))
@@ -96,11 +99,19 @@ def unify_votes(paths,out_path):
         out_i="%s/%s" % (out_path,path0.split("/")[-1])
         learn.votes.unify_votes([path0,path1],out_i)
 
+def show_result(in_path,acc=True):
+    paths=files.bottom_dict(in_path)
+    for path_i in paths:
+        for binary_i in [True,False]:
+            acc_i=ens.read_result(path_i,binary_i,acc)
+            print("%s,%s,%s" % (path_i,binary_i,acc_i))
+
 paths=["MHAD/agum/SVC","MHAD/scale/SVC"]
 out_path="MHAD/mixed/SVC"
 
+show_result("MSR/scale")
 #unify_votes(paths,out_path)
 
-ensemble=get_ensemble(inliner,feats_type="multi")
+#ensemble=get_ensemble(inliner,feats_type="multi")
 #ensemble((common_path,deep_path),out,binary,clf_type,acc)
-ensemble.product_exp((common_path,deep_path),out,acc=acc)
+#ensemble.product_exp((common_path,deep_path),out,acc=acc)

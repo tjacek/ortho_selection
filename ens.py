@@ -18,6 +18,12 @@ class Ensemble(object):
         y_pred=learn.voting(votes,binary)
         return [y_true,y_pred,votes[0][2]]  
 
+def read_result(in_path,binary=False,acc=False):
+    votes=learn.votes.read_votes(in_path)
+    y_pred=learn.voting(votes,binary)
+    result=[votes[0][0], y_pred,votes[0][2]]
+    return show_report( result,acc)
+
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
         votes=learn.votes.read_votes(out_path)
@@ -89,10 +95,11 @@ def total_selection(in_path):
 
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
-    common_paths="exp_agum/agum/basic/feats"
-    common_paths1="exp_agum/scale/basic/feats"
+    common_path="../MSR/rank_rot_rev/feat"
+#    common_paths1="exp_agum/scale/basic/feats"
 #    deep_path="../MSR_good/ens/sim/feats"
-    deep_path="../../agum/outliners/ens/sim/feats"
-    paths=([common_paths,common_paths1],deep_path)
-    acc_i=ensemble(paths,clf="LR",out_path=None)
+    dir_path="../../2020_IX/ortho_selection/exp/MSR"
+    deep_path=dir_path+"/ens/basic/feats"
+    paths=(None,deep_path)
+    acc_i=ensemble(paths,clf="SVC",out_path=None)
     print(acc_i)
