@@ -20,6 +20,8 @@ class Ensemble(object):
 
 def read_result(in_path,binary=False,acc=False):
     votes=learn.votes.read_votes(in_path)
+    if(binary):
+        votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
     y_pred=learn.voting(votes,binary)
     result=[votes[0][0], y_pred,votes[0][2]]
     return show_report( result,acc)
@@ -47,7 +49,8 @@ def get_ensemble(selection=None):
     if(type(selection)==str):
         return Ensemble(clf.get_selection(selection))
     if(selection):
-        selection=selection_decorator(selection)
+        pass
+#        selection=selection_decorator(selection)
     else:
         selection=tools.read_datasets
     return Ensemble(selection)
@@ -95,11 +98,10 @@ def total_selection(in_path):
 
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
-    common_path="../MSR/rank_rot_rev/feat"
-#    common_paths1="exp_agum/scale/basic/feats"
+    common_path="proj/MSR/common/stats/feats"#"../ts_ensemble/corl/dtw"
 #    deep_path="../MSR_good/ens/sim/feats"
-    dir_path="../../2020_IX/ortho_selection/exp/MSR"
-    deep_path=dir_path+"/ens/basic/feats"
+    dir_path="proj/MSR"
+    deep_path=dir_path+"/ens/stats/feats"
     paths=(None,deep_path)
-    acc_i=ensemble(paths,clf="SVC",out_path=None)
+    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
     print(acc_i)

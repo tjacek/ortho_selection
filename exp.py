@@ -1,10 +1,10 @@
 import os.path#,itertools
 import files,ens,clf,inliners
-import learn.votes
+import learn.votes,tools
 
-in_dict="MSR_exp"
-out_dict="MSR"
-common="dtw"
+in_dict="proj/MSR"
+out_dict="MSR3"
+common="scale"
 
 if(common=="mixed"):
     common_path=["%s/%s" % (in_dict,feat_i) 
@@ -45,7 +45,7 @@ class EnsExp(object):
                 print(acc_ij)
     
     def product_exp(self,paths,out,acc=True):
-        args= [[True,False],["LR","SVC"]]
+        args= [[True,False],["LR"]]#,"SVC"]]
         arg_combs=files.iter_product(args) #list(itertools.product(*args))
         for binary_i,clf_i in arg_combs:
             print(clf_i)
@@ -70,18 +70,20 @@ def get_paths(old_paths,common,deep):
 #        common_path="%s/%s/feats" % (prefix_common,common)
 #    return common_path,deep_path
 
-def get_ensemble(inliner=False,prefix=True,feats_type=False):
-    ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
+def get_ensemble(inliner=False,prefix=True,
+                feats_type=False,concat=False):
+    selection=tools.concat_dataset if(concat) else None
+    ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble(selection)
     common,ens_feats=get_feat_types(feats_type)
     return EnsExp(ensemble,prefix,common,ens_feats)
 
 def get_feat_types(feats_type):
     if(feats_type=="agum"):
-        return ["stats","basic"],["stats","basic"]
+        return ["stats","basic","sim"],["stats","basic","sim"]
     if(feats_type=="dtw"):
-        return ["max_z"],["stats","basic"]
+        return ["max_z"],["stats","basic","sim"]
     if(feats_type=="multi"):
-        multi=[["max_z"],["stats","basic"]]
+        multi=[["max_z"],["stats","basic","sim"]]
         multi=files.iter_product(multi)
         return multi,["stats","basic"]
     return None,None
@@ -109,9 +111,8 @@ def show_result(in_path,acc=True):
 paths=["MHAD/agum/SVC","MHAD/scale/SVC"]
 out_path="MHAD/mixed/SVC"
 
-show_result("MSR/scale")
+show_result("MSR3/scale",True)
 #unify_votes(paths,out_path)
 
-#ensemble=get_ensemble(inliner,feats_type="multi")
-#ensemble((common_path,deep_path),out,binary,clf_type,acc)
-#ensemble.product_exp((common_path,deep_path),out,acc=acc)
+ensemble=get_ensemble(inliner,feats_type="multi",concat=False)
+ensemble.product_exp((common_path,deep_path),out,acc=acc)
