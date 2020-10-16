@@ -50,3 +50,19 @@ def multi_dataset(common_path,deep_path):
     datasets=[combined_dataset(common_i,deep_path)
                 for common_i in common_path]
     return itertools.chain.from_iterable(datasets)
+
+def concat_dataset(in_path):
+    if(type(in_path)==tuple):
+        common_path,deep_path=in_path
+#        raise Exception(type(common_path))
+        if(type(common_path)==list):
+            common_data=feats.read_unified(common_path)
+        else:
+            common_data=feats.read(common_path)
+#            return multi_dataset(common_path,deep_path) 
+#        return combined_dataset(common_path,deep_path)
+        deep_data=feats.read(deep_path)
+        datasets=[common_data+ data_i 
+                    for data_i in deep_data]
+        return datasets
+    return feats.read(in_path)
