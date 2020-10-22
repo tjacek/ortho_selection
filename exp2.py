@@ -1,4 +1,4 @@
-import ens
+import ens,files
 
 class EnsEnsemble(object):
 	def __init__(self,ensemble,gen=None):
@@ -7,10 +7,20 @@ class EnsEnsemble(object):
 		self.ensemble=ensemble
 		self.gen=gen
 
-	def __call__(self,paths,out):
+	def __call__(self,paths,out,binary=False,clf="LR",acc=True):
 		for paths_i,out_i in self.gen(paths,out):
 			print(paths_i)
 			print(out_i)
+			acc_i=self.ensemble(paths_i,clf=clf,
+                    out_path=out_i,binary=binary,acc_only=acc)
+			print(acc_i)
+
+    def product_exp(self,paths,out,acc=True):
+        args= [[True,False],["LR","SVC"]]
+        arg_combs=files.iter_product(args) 
+        for binary_i,clf_i in arg_combs:
+            print(clf_i)
+            self(paths,out,binary_i,clf_i,acc=acc)
 
 class GenPaths(object):
 	def __init__(self,common=None,binary=None):
