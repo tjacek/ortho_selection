@@ -1,4 +1,4 @@
-import ens,files
+import ens,files,inliners
 
 class ExpEnsemble(object):
 	def __init__(self,ensemble,gen=None):
@@ -39,9 +39,16 @@ class GenPaths(object):
 				new_paths=(common_i,deep_i)
 				yield new_paths,out_i
 
-out_path="MSR3"
+def get_exp_ens(inliner=False,gen=None):
+	ensemble= inliners.InlinerEnsemble() if(inliner) else ens.get_ensemble()
+	if(gen=="no_sim"):
+		feats=["stats","basic"]
+		gen=GenPaths(feats,feats)
+	return ExpEnsemble(ensemble,gen)
+
+out_path="MSR2"
 common="../common"
 deep_path="../ens"
 
-ens_exp=ExpEnsemble(ens.get_ensemble())
+ens_exp=get_exp_ens(inliner=True)
 ens_exp.product_exp((common,deep_path),out_path,acc=True)
