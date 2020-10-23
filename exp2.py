@@ -1,26 +1,24 @@
 import ens,files
 
-class EnsEnsemble(object):
+class ExpEnsemble(object):
 	def __init__(self,ensemble,gen=None):
 		if(not gen):
 			gen=GenPaths()
 		self.ensemble=ensemble
 		self.gen=gen
 
-	def __call__(self,paths,out,binary=False,clf="LR",acc=True):
+	def __call__(self,paths,out,binary=False,clf="LR",acc=True,prefix=""):
 		for paths_i,out_i in self.gen(paths,out):
-			print(paths_i)
-			print(out_i)
-			acc_i=self.ensemble(paths_i,clf=clf,
-                    out_path=out_i,binary=binary,acc_only=acc)
-			print(acc_i)
+			acc_i=self.ensemble(paths_i,clf=clf,out_path=out_i,binary=binary,acc_only=acc)
+			result_i="%s,%s,%s" % (paths_i,prefix,acc_i)
+			print(result_i)
 
-    def product_exp(self,paths,out,acc=True):
-        args= [[True,False],["LR","SVC"]]
-        arg_combs=files.iter_product(args) 
-        for binary_i,clf_i in arg_combs:
-            print(clf_i)
-            self(paths,out,binary_i,clf_i,acc=acc)
+	def product_exp(self,paths,out,acc=True):
+		args= [[True,False],["LR"]]#,"SVC"]]
+		arg_combs=files.iter_product(args) 
+		for binary_i,clf_i in arg_combs:
+			prefix="%s,%s" % (clf_i,str(binary_i))
+			self(paths,out,binary_i,clf_i,acc=acc,prefix=prefix)
 
 class GenPaths(object):
 	def __init__(self,common=None,binary=None):
@@ -41,10 +39,9 @@ class GenPaths(object):
 				new_paths=(common_i,deep_i)
 				yield new_paths,out_i
 
-in_dict="proj/MSR"
-out_dict="MSR3"
-common="scale"
-deep_path="%s/ens" % in_dict
+out_path="MSR3"
+common="../common"
+deep_path="../ens"
 
-ens_exp=EnsEnsemble(None)
-ens_exp((common,deep_path) ,"test")
+ens_exp=ExpEnsemble(ens.get_ensemble())
+ens_exp.product_exp((common,deep_path),out_path,acc=True)
