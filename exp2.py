@@ -63,13 +63,23 @@ def show_result(in_path,acc=True):
     for path_i in paths:
         for binary_i in [True,False]:
             acc_i=ens.read_result(path_i,binary_i,acc)
-            print("%s,%s,%s" % (path_i,binary_i,acc_i))
+            prefix_i=path_i.split('/')[-1]
+            clf_i=path_i.split('/')[-2]
+            prefix_i=prefix_i.replace("_",",")
+            tuple_i=(prefix_i,clf_i,binary_i,acc_i)
+            print("%s,%s,%s,%s" % tuple_i)
 
-out_path="four3"
-common=["../forth/agum","../forth/simple"]
-#common=common[0]
-deep_path="../forth/ens"
+dataset="four"
+feat_type="agum"
+out_path="votes/%s/%s" % (dataset,feat_type)
 
-ens_exp=get_exp_ens(inliner=True,gen="no_sim")
+if(feat_type=="mixed"):
+    common=["exp/%s/%s" % (dataset,str_i) 
+                for str_i in ["simple","agum"]]
+else:
+    common="exp/%s/%s" % (dataset,feat_type)
+deep_path="exp/%s/ens" % dataset
+
+ens_exp=get_exp_ens(inliner=False,gen="no_sim")
 ens_exp.product_exp((common,deep_path),out_path,acc=True)
-#show_result("four3",acc=True)
+#show_result(out_path,acc=True,inliner=True)
