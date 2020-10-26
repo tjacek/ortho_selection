@@ -58,9 +58,18 @@ def get_exp_ens(inliner=False,gen=None):
 		gen=GenPaths(feats,feats)
 	return ExpEnsemble(ensemble,gen)
 
-out_path="MSR3"
-common=["../third/agum","../third/simple"]
-deep_path="../third/ens"
+def show_result(in_path,acc=True):
+    paths=files.bottom_dict(in_path)
+    for path_i in paths:
+        for binary_i in [True,False]:
+            acc_i=ens.read_result(path_i,binary_i,acc)
+            print("%s,%s,%s" % (path_i,binary_i,acc_i))
 
-ens_exp=get_exp_ens(inliner=False,gen="no_sim")
+out_path="four3"
+common=["../forth/agum","../forth/simple"]
+#common=common[0]
+deep_path="../forth/ens"
+
+ens_exp=get_exp_ens(inliner=True,gen="no_sim")
 ens_exp.product_exp((common,deep_path),out_path,acc=True)
+#show_result("four3",acc=True)
