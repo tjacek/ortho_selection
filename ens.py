@@ -24,6 +24,8 @@ def read_result(in_path,binary=False,acc=False):
         votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
     y_pred=learn.voting(votes,binary)
     result=[votes[0][0], y_pred,votes[0][2]]
+    if(acc=="raw"):
+        return result
     return show_report( result,acc)
 
 def get_votes(datasets,binary,clf,out_path):

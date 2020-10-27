@@ -1,17 +1,20 @@
 import numpy as np
-import ens,learn.report,tools
+import ens,learn.report,tools,files
 from learn import get_acc
 
-def show_acc(paths):
-    ensemble=ens.get_ensemble()
-    datasets=[ (paths['common'],paths['ens']),(None,paths['ens']),(paths['common'],None)]
-    acc=[]
-    for data_i in datasets:
-        acc_i=ensemble(data_i,clf="LR",acc_only=True)
-        acc.append(acc_i)
-    print("***************")    
-    for acc_i in acc:
-        print(acc_i)
+def show_acc(in_path):
+    paths=files.bottom_dict(in_path)
+    result=[]
+    all_acc=[]
+    for path_i in paths:
+        for binary_i in [True,False]:
+            result_i=ens.read_result(path_i,binary_i,"raw")
+            y_true,y_pred=result_i[0],result_i[1]
+            n_cat= max(result_i[0])+1
+            acc_i=[learn.report.binary_acc(y_true,y_pred,cat_i)
+                    for cat_i in range(n_cat)]
+            all_acc.append(acc_i)
+    return all_acc
 
 def show_votes(paths,binary=True):
     ensemble=ens.get_ensemble()
@@ -45,12 +48,6 @@ def simple_exp(paths):
     path=(paths['common'],paths['ens'])
     return ensemble.get_result(path,clf="LR")
 
-common_path="proj/MSR/scale/max_z/feats"
-common_path1="proj/MSR/scale/stats/feats"
-
-deep_path="proj/MSR/ens/basic/feats"
-paths=get_paths([common_path,common_path1],deep_path)
-#print(get_acc((paths['common'],paths['ens'])))
-#show_acc(paths)
+print(show_acc("votes/MSR"))
 #ens_stats(paths)
-show_votes(paths)
+#show_votes(paths)
