@@ -48,6 +48,7 @@ def simple_exp(paths):
     path=(paths['common'],paths['ens'])
     return ensemble.get_result(path,clf="LR")
 
-print(show_acc("votes/MSR"))
+if __name__ == '__main__':
+    print(show_acc("votes/MSR"))
 #ens_stats(paths)
 #show_votes(paths)
