@@ -14,8 +14,16 @@ class ExpEnsemble(object):
 		for paths_i,out_i in self.gen(paths):
 			out_path="%s/%s" % (out,out_i)
 			acc_i=self.ensemble(paths_i,clf=clf,out_path=out_path,binary=binary,acc_only=acc)
-			result_i="%s,%s,%s" % (out_path,prefix,acc_i)
+			result_i=self.format_result(out_path,prefix,acc_i)
 			print(result_i)
+
+	def format_result(self,out_path,prefix,acc_i):
+		inliner_i=(type(self.ensemble)==inliners.InlinerEnsemble) 
+		prefix_i=out_path.split('/')[-1]
+		feat_desc=prefix_i.replace("_",",")
+		tuple_i=(feat_desc,str(inliner_i),prefix,acc_i)
+		result_i="%s,%s,%s,%s" % tuple_i
+		return result_i
 
 	def product_exp(self,paths,out,acc=True):
 		args= [[True,False],["LR","SVC"]]
@@ -60,6 +68,7 @@ def get_exp_ens(inliner=False,gen=None):
 
 def show_result(in_path,acc=True):
     paths=files.bottom_dict(in_path)
+    result=[]
     for path_i in paths:
         for binary_i in [True,False]:
             acc_i=ens.read_result(path_i,binary_i,acc)
@@ -67,19 +76,26 @@ def show_result(in_path,acc=True):
             clf_i=path_i.split('/')[-2]
             prefix_i=prefix_i.replace("_",",")
             tuple_i=(prefix_i,clf_i,binary_i,acc_i)
-            print("%s,%s,%s,%s" % tuple_i)
+            str_i="%s,%s,%s,%s" % tuple_i
+            print(str_i)
+            result.append(str_i)
+    return result
 
-dataset="four"
-feat_type="agum"
-out_path="votes/%s/%s" % (dataset,feat_type)
-
-if(feat_type=="mixed"):
-    common=["exp/%s/%s" % (dataset,str_i) 
+def get_common_feats(dataset,feat_type):
+    if(feat_type=="mixed"):
+        common=["exp/%s/%s" % (dataset,str_i) 
                 for str_i in ["simple","agum"]]
-else:
-    common="exp/%s/%s" % (dataset,feat_type)
-deep_path="exp/%s/ens" % dataset
+    else:
+        common="exp/%s/%s" % (dataset,feat_type)
+    return common
 
-ens_exp=get_exp_ens(inliner=False,gen="no_sim")
-ens_exp.product_exp((common,deep_path),out_path,acc=True)
-#show_result(out_path,acc=True,inliner=True)
+if __name__ == '__main__':
+    dataset="four"
+    feat_type="simp"
+    out_path="votes/%s/%s" % (dataset,feat_type)
+    inliner=False
+    common=get_common_feats(dataset,feat_type)
+    deep_path="exp/%s/ens" % dataset
+    ens_exp=get_exp_ens(inliner=inliner,gen="no_sim")
+    ens_exp.product_exp((common,deep_path),out_path,acc=True)
+    #show_result(out_path,acc=True,inliner=True)
