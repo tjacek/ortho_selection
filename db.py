@@ -52,7 +52,19 @@ def make_acc(in_path,db_path):
 	conn.commit()
 	conn.close()
 
+def query(cat,db_path,threshold=0.5):
+	conn = sqlite3.connect(db_path)
+	sql_str='''SELECT acc.cat%d,results.*
+				FROM acc
+				INNER JOIN results
+				ON acc.id==results.id 
+				WHERE acc.cat%d>%f'''
+	sql_str= sql_str % (cat,cat,threshold)
+	for row in conn.execute(sql_str):
+		print(row)
+
 if __name__ == '__main__':
 #	make_db("votes/MSR","db/result.db")
-	show("db/result.db","acc")
+#	show("db/result.db","acc")
 #	make_acc("votes/MSR","db/result.db")
+	query(19,"db/result.db")
