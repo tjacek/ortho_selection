@@ -46,34 +46,69 @@ def show( db_path,table="results"):
 	for row in conn.execute(sql_str):
 		print(row)
 
-def make_acc(in_path,db_path):
-	acc=audit.show_acc(in_path)
+def make_acc(in_path,db_path,
+				acc_type="cat",name="acc"):
+	acc=audit.show_acc(in_path,acc_type=acc_type)
 	db=DB(db_path)
 	n_cats=len(acc[0])
 	data=",".join(['cat%d integer'%i 
 			for i in range(n_cats)])	
 	data="id integer,%s" % data
-	db.make("acc",data)
+	db.make(name,data)
 	for i,acc_i in enumerate(acc):
 		acc_i=",".join([ str(cat_j) 
 					for cat_j in acc_i])
 		acc_i="%d,%s" % (i,acc_i)
-		db.insert("acc",acc_i)
+		db.insert(name,acc_i)
 	db.close()
 
-def query(cat,db_path,threshold=0.5):
+def make_indv_cat(in_path,db_path):
+	acc=audit.show_acc(in_path,acc_type="indv_cat")
+	db=DB(db_path)
+	n_cats=len(acc[0])
+	data=",".join(['cat%d integer'%i 
+			for i in range(n_cats)])	
+	data="id integer,cat integer,%s" % data
+	db.make("indv_cat",data)
+	for i,acc_i in enumerate(acc):
+		for j,acc_j in enumerate(acc_i):
+			acc_j=",".join([ str(cat_j) 
+					for cat_j in acc_j])
+			acc_j="%d,%d,%s" % (i,j,acc_j)
+			db.insert("indv_cat",acc_j)
+	db.close()
+
+def cat_query(cat,db_path,name="acc",threshold=0.85):
 	conn = sqlite3.connect(db_path)
-	sql_str='''SELECT acc.cat%d,results.*
-				FROM acc
+	cols=" %s.cat,%s.cat%d,results.*" % (name,name,cat)
+	cond=" %s.cat%d>%f" % (name,cat,threshold)
+	query_template(cols,name,cond,conn)
+
+def query_template(cols,name,cond,conn):
+	sql_str='''SELECT %s
+				FROM %s
 				INNER JOIN results
-				ON acc.id==results.id 
-				WHERE acc.cat%d>%f'''
-	sql_str= sql_str % (cat,cat,threshold)
+				ON %s.id=results.id
+				WHERE %s'''
+	sql_str=sql_str % (cols,name,name,cond)
+	print(sql_str) 
 	for row in conn.execute(sql_str):
 		print(row)
 
+def query(db_path,max_thres=0.81):
+	conn = sqlite3.connect(db_path)
+	sql_str='''SELECT results.*,acc_indv.*
+				FROM acc_indv
+				INNER JOIN results
+				ON acc_indv.id==results.id '''
+	for row in conn.execute(sql_str):
+		if(max(row[7:])<max_thres):
+			print(row)
+
 if __name__ == '__main__':
 #	make_db("votes/MSR","db/result.db")
-#	show("db/result.db","acc")
-#	make_acc("votes/MSR","db/result.db")
-	query(19,"db/result.db")
+#	show("db/result.db","indv_cat")
+#	make_acc("votes/MSR","db/result.db",
+#		name="acc_indv",acc_type="indv")
+	cat_query(14,"db/result.db",name="indv_cat")
+#	make_indv_cat("votes/MSR","db/result.db")
