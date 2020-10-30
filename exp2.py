@@ -1,3 +1,4 @@
+import re
 import ens,files,inliners
 
 class ExpEnsemble(object):
@@ -65,7 +66,8 @@ def get_exp_ens(inliner=False,gen=None):
 		feats=["stats","basic"]
 		gen=GenPaths(feats,feats)
 	elif(gen=="dtw"):
-		common=[["stats","max_z"],["basic","max_z"]]
+		common=[["stats","maxz"],["basic","maxz"],
+				["sim","maxz"]]
 		binary=["stats","basic","sim"]
 		gen=GenPaths(common,binary)
 	return ExpEnsemble(ensemble,gen)
@@ -78,12 +80,22 @@ def show_result(in_path,acc=True):
             acc_i=ens.read_result(path_i,binary_i,acc)
             prefix_i=path_i.split('/')[-1]
             clf_i=path_i.split('/')[-2]
-            prefix_i=prefix_i.replace("_",",")
+            prefix_i=format_prefix(prefix_i)
             tuple_i=(prefix_i,clf_i,binary_i,acc_i)
             str_i="%s,%s,%s,%s" % tuple_i
             print(str_i)
             result.append(str_i)
     return result
+
+def format_prefix(prefix_i):
+	bracket_re=re.compile('\\[(.*?)\\]')
+	if(bracket_re.match(prefix_i)):
+		head,rest=prefix_i.split("]")
+		head= re.sub(r"(\s+)|(\[)|\'","",head)
+		head=head.replace(",","#")
+		rest=rest.replace("_","")
+		prefix_i="%s,%s" % (head,rest)
+	return prefix_i.replace("_",",")
 
 def get_common_feats(dataset,feat_type):
     if(feat_type=="mixed"):
