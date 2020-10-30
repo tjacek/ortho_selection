@@ -1,5 +1,5 @@
 import learn,learn.report,feats
-import selection,tools,clf,learn.votes
+import selection,tools,clf,learn.votes,files
 import numpy as np
 import os.path
 
@@ -26,6 +26,16 @@ def read_result(in_path,binary=False,acc=False):
     result=[votes[0][0], y_pred,votes[0][2]]
     if(acc=="raw"):
         return result
+    return show_report( result,acc)
+
+def mixed_ensemble(paths,binary=False,acc=False):
+    votes=[learn.votes.read_votes(path_i)
+            for path_i in paths]
+    votes=files.flatten_list(votes)
+    if(binary):
+        votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
+    y_pred=learn.voting(votes,binary)
+    result=[votes[0][0], y_pred,votes[0][2]]
     return show_report( result,acc)
 
 def get_votes(datasets,binary,clf,out_path):
@@ -101,9 +111,10 @@ def total_selection(in_path):
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
     common_path="proj/MSR/common/stats/feats"#"../ts_ensemble/corl/dtw"
-#    deep_path="../MSR_good/ens/sim/feats"
     dir_path="proj/MSR"
     deep_path=dir_path+"/ens/stats/feats"
-    paths=(None,deep_path)
-    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
-    print(acc_i)
+#    paths=(None,deep_path)
+#    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
+#    print(acc_i)
+    paths=["votes/MSR/LR/maxz_basic","votes/MSR/LR/maxz_stats"]
+    mixed_ensemble(paths,False)
