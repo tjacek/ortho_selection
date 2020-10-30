@@ -33,7 +33,9 @@ def make_db(in_path,db_path):
 				acc  real'''
 	db.make("results",sql_str)
 	for i,r_i in enumerate(results):
+		print(r_i)
 		r_i=r_i.split(",")
+		print(r_i)
 		hard_i=int(r_i[3]=='True')
 		tuple_i= (i,r_i[0],r_i[1],r_i[2],hard_i,float(r_i[4]))
 		data_i="%d,'%s','%s','%s',%d,%f" % tuple_i
@@ -62,12 +64,11 @@ def make_acc(in_path,db_path,
 		db.insert(name,acc_i)
 	db.close()
 
-def make_indv_cat(in_path,db_path):
+def make_indv_cat(in_path,db_path,n_cats=20):
 	acc=audit.show_acc(in_path,acc_type="indv_cat")
 	db=DB(db_path)
-	n_cats=len(acc[0])
 	data=",".join(['cat%d integer'%i 
-			for i in range(n_cats)])	
+			for i in range(n_cats)])
 	data="id integer,cat integer,%s" % data
 	db.make("indv_cat",data)
 	for i,acc_i in enumerate(acc):
@@ -106,9 +107,9 @@ def query(db_path,max_thres=0.81):
 			print(row)
 
 if __name__ == '__main__':
-#	make_db("votes/MSR","db/result.db")
-#	show("db/result.db","indv_cat")
+#	make_db("votes/MSR2","db/result.db")
+#	show("db/result.db","results")
 #	make_acc("votes/MSR","db/result.db",
 #		name="acc_indv",acc_type="indv")
-	cat_query(14,"db/result.db",name="indv_cat")
-#	make_indv_cat("votes/MSR","db/result.db")
+	cat_query(6,"db/result.db",name="indv_cat")
+#	make_indv_cat("votes/MSR2","db/result.db")
