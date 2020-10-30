@@ -52,9 +52,9 @@ class GenPaths(object):
 				yield new_paths,out_i
 
 def get_paths(common,feat):
-	if(type(common)==list):
-		common=[ "%s/%s/feats" % (common_i,feat)
-				for common_i in common]
+	if(type(feat)==list):
+		common=[ "%s/%s/feats" % (common,feat_i)
+				for feat_i in feat]
 	else:
 		common="%s/%s/feats" % (common,feat)
 	return common
@@ -64,6 +64,10 @@ def get_exp_ens(inliner=False,gen=None):
 	if(gen=="no_sim"):
 		feats=["stats","basic"]
 		gen=GenPaths(feats,feats)
+	elif(gen=="dtw"):
+		common=[["stats","max_z"],["basic","max_z"]]
+		binary=["stats","basic","sim"]
+		gen=GenPaths(common,binary)
 	return ExpEnsemble(ensemble,gen)
 
 def show_result(in_path,acc=True):
@@ -90,12 +94,12 @@ def get_common_feats(dataset,feat_type):
     return common
 
 if __name__ == '__main__':
-    dataset="four"
-    feat_type="simp"
-    out_path="votes/%s/%s" % (dataset,feat_type)
+#    dataset="proj"
+#    feat_type="max_z3"
+    out_path="votes/MSR2"#"%s/%s" % (dataset,feat_type)
     inliner=False
-    common=get_common_feats(dataset,feat_type)
-    deep_path="exp/%s/ens" % dataset
-    ens_exp=get_exp_ens(inliner=inliner,gen="no_sim")
+    common="MSR_exp/scale1"
+    deep_path="MSR_exp/ens"
+    ens_exp=get_exp_ens(inliner=inliner,gen="dtw")
     ens_exp.product_exp((common,deep_path),out_path,acc=True)
-    #show_result(out_path,acc=True,inliner=True)
+#    show_result(out_path,acc=True)
