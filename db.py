@@ -106,10 +106,29 @@ def query(db_path,max_thres=0.81):
 		if(max(row[7:])<max_thres):
 			print(row)
 
+def count_good(db_path,cat=14,threshold=0.8):
+	conn = sqlite3.connect(db_path)
+	sql_str='''SELECT *
+				FROM results'''
+	for row in conn.execute(sql_str):
+		if(row[-2]==1):
+			print(row)
+			print(count_helper(conn,row[0],cat,threshold))
+
+def count_helper(conn,ens_id=5,cat=0,threshold=0.8):
+	cond="(indv_cat.id==%d AND  indv_cat.cat%d>%f)"
+	cond=cond % (ens_id,cat,threshold)
+	sql_str='''SELECT COUNT(*)
+				FROM indv_cat
+				WHERE %s'''
+	sql_str=sql_str%cond
+	return conn.execute(sql_str).fetchone()[0]
+
 if __name__ == '__main__':
 #	make_db("votes/MSR2","db/result.db")
 #	show("db/result.db","results")
 #	make_acc("votes/MSR","db/result.db",
 #		name="acc_indv",acc_type="indv")
-	cat_query(6,"db/result.db",name="indv_cat")
+#	cat_query(6,"db/result.db",name="indv_cat")
 #	make_indv_cat("votes/MSR2","db/result.db")
+	print(count_good("db/result.db"))
