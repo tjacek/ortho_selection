@@ -38,6 +38,17 @@ def mixed_ensemble(paths,binary=False,acc=False):
     result=[votes[0][0], y_pred,votes[0][2]]
     return show_report( result,acc)
 
+def all_exp(in1,in2):
+    paths1=[files.top_files(path_i) for path_i in files.top_files(in1)]
+    paths1=files.flatten_list(paths1)
+    paths2=[files.top_files(path_i) for path_i in files.top_files(in2)]
+    paths2=files.flatten_list(paths2)   
+    for path_i in paths1:
+        for path_j in paths2:
+            print(path_i)
+            print(path_j)
+            print(mixed_ensemble([path_i,path_j],binary=False,acc=True))
+
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
         votes=learn.votes.read_votes(out_path)
@@ -74,15 +85,6 @@ def selection_decorator(selection):
 		return datasets
 	return selection_helper
 
-def binary_selection(in_path):
-    common_path,deep_path=in_path	
-    deep_data=feats.read(deep_path)
-    deep_data=[binary_helper(i,data_i) 
-        for i,data_i in enumerate(deep_data)]
-    common=feats.read(common_path)[0]
-    datasets=[ common+deep_i for deep_i in deep_data]
-    return datasets
-
 def binary_helper(i,data_i):
     train_i=data_i.split()[0]
     train_i.info=tools.person_cats(train_i.info)
@@ -93,21 +95,6 @@ def binary_helper(i,data_i):
     return selection.select_feats(data_i,
             info,lambda x:x<1)
 
-def total_selection(in_path):
-    common_path,deep_path=in_path	
-    deep_data=feats.read(deep_path)
-    deep_train=[deep_i.split()[0]
-                    for deep_i in deep_data]
-    info=[np.median(train_i.mutual())
-            for train_i in deep_train]
-    info=(info-np.mean(info))/np.std(info)
-    print(info)
-    common=feats.read(common_path)[0]
-    datasets=[ common+data_i
-                for i,data_i in enumerate(deep_data)
-                    if(info[i]>-1)]
-    return datasetst
-
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
     common_path="proj/MSR/common/stats/feats"#"../ts_ensemble/corl/dtw"
@@ -116,5 +103,7 @@ if __name__=="__main__":
 #    paths=(None,deep_path)
 #    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
 #    print(acc_i)
-    paths=["votes/MSR/LR/maxz_basic","votes/MSR/LR/maxz_stats"]
+    paths=["votes/maxz/LR/maxz_sim",
+            "votes/base/SVC/stats_basic"]
     mixed_ensemble(paths,False)
+#    all_exp("votes/maxz","votes/base")

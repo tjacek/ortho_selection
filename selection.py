@@ -34,3 +34,27 @@ def select_feats(data,info,cond):
     new_feats=data.modify(new_X)
     print(new_feats.dim())
     return new_feats
+
+def total_selection(in_path):
+    common_path,deep_path=in_path   
+    deep_data=feats.read(deep_path)
+    deep_train=[deep_i.split()[0]
+                    for deep_i in deep_data]
+    info=[np.median(train_i.mutual())
+            for train_i in deep_train]
+    info=(info-np.mean(info))/np.std(info)
+    print(info)
+    common=feats.read(common_path)[0]
+    datasets=[ common+data_i
+                for i,data_i in enumerate(deep_data)
+                    if(info[i]>-1)]
+    return datasetst
+
+def binary_selection(in_path):
+    common_path,deep_path=in_path   
+    deep_data=feats.read(deep_path)
+    deep_data=[binary_helper(i,data_i) 
+        for i,data_i in enumerate(deep_data)]
+    common=feats.read(common_path)[0]
+    datasets=[ common+deep_i for deep_i in deep_data]
+    return datasets
