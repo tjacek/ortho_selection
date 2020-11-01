@@ -19,23 +19,18 @@ class Ensemble(object):
         return [y_true,y_pred,votes[0][2]]  
 
 def read_result(in_path,binary=False,acc=False):
-    votes=learn.votes.read_votes(in_path)
+    if(type(in_path)==list):
+        votes=[learn.votes.read_votes(path_i)
+            for path_i in in_path]
+        votes=files.flatten_list(votes)
+    else:
+        votes=learn.votes.read_votes(in_path)
     if(binary):
         votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
     y_pred=learn.voting(votes,binary)
     result=[votes[0][0], y_pred,votes[0][2]]
     if(acc=="raw"):
         return result
-    return show_report( result,acc)
-
-def mixed_ensemble(paths,binary=False,acc=False):
-    votes=[learn.votes.read_votes(path_i)
-            for path_i in paths]
-    votes=files.flatten_list(votes)
-    if(binary):
-        votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
-    y_pred=learn.voting(votes,binary)
-    result=[votes[0][0], y_pred,votes[0][2]]
     return show_report( result,acc)
 
 def all_exp(in1,in2):
@@ -47,7 +42,7 @@ def all_exp(in1,in2):
         for path_j in paths2:
             print(path_i)
             print(path_j)
-            print(mixed_ensemble([path_i,path_j],binary=False,acc=True))
+            print(read_result([path_i,path_j],binary=False,acc=True))
 
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
@@ -105,5 +100,5 @@ if __name__=="__main__":
 #    print(acc_i)
     paths=["votes/maxz/LR/maxz_sim",
             "votes/base/SVC/stats_basic"]
-    mixed_ensemble(paths,False)
-#    all_exp("votes/maxz","votes/base")
+#    mixed_ensemble(paths,False)
+    all_exp("votes/maxz","votes/base")
