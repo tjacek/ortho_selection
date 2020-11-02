@@ -85,7 +85,7 @@ def cat_query(cat,db_path,name="acc",threshold=0.85):
 	cond=" %s.cat%d>%f" % (name,cat,threshold)
 	query_template(cols,name,cond,conn)
 
-def query_template(cols,name,cond,conn):
+def query_template(cols,name,cond,conn,fun=None):
 	sql_str='''SELECT %s
 				FROM %s
 				INNER JOIN results
@@ -93,18 +93,19 @@ def query_template(cols,name,cond,conn):
 				WHERE %s'''
 	sql_str=sql_str % (cols,name,name,cond)
 	print(sql_str) 
+	if(not fun):
+		fun=print
 	for row in conn.execute(sql_str):
-		print(row)
+		fun(row)
 
-def query(db_path,max_thres=0.81):
+def query(db_path,max_thres=0.90):
 	conn = sqlite3.connect(db_path)
-	sql_str='''SELECT results.*,acc_indv.*
-				FROM acc_indv
-				INNER JOIN results
-				ON acc_indv.id==results.id '''
-	for row in conn.execute(sql_str):
-		if(max(row[7:])<max_thres):
+	cols=" results.*,indv_cat.* "
+	name,cond="indv_cat","1==1"
+	def helper(row):
+		if(max(row[9:])<max_thres):
 			print(row)
+	query_template(cols,name,cond,conn,helper)
 
 def count_good(db_path,cat=14,threshold=0.8):
 	conn = sqlite3.connect(db_path)
@@ -125,10 +126,11 @@ def count_helper(conn,ens_id=5,cat=0,threshold=0.8):
 	return conn.execute(sql_str).fetchone()[0]
 
 if __name__ == '__main__':
-#	make_db("votes/MSR2","db/result.db")
+#	make_db("votes/corl","db/corl.db")
 #	show("db/result.db","results")
-#	make_acc("votes/MSR","db/result.db",
-#		name="acc_indv",acc_type="indv")
+#	make_acc("votes/base","db/base.db",
+#		name="acc_cat",acc_type="acc_indv")
 #	cat_query(6,"db/result.db",name="indv_cat")
-#	make_indv_cat("votes/MSR2","db/result.db")
-	print(count_good("db/result.db"))
+#	make_indv_cat("votes/corl","db/corl.db")
+#	count_good("db/base.db",cat=17,threshold=0.95)
+	query("db/result.db")
