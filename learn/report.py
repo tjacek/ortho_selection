@@ -5,12 +5,14 @@ from sklearn.metrics import precision_recall_fscore_support,accuracy_score
 from collections import defaultdict
 import learn,tools,files
 
-def show_confusion(result):
+def show_confusion(result,out_path=None):
     cf_matrix=confusion_matrix(result[0],result[1])
     print(cf_matrix)
     score=[np.sqrt(np.sum(cf_i**2)/(np.sum(cf_i)**2))
                 for cf_i in cf_matrix]
-    print(sum(score)) 
+    print(sum(score))
+    if(out_path):
+        np.savetxt(out_path,cf_matrix,delimiter=",",fmt='%.2e')
 
 def show_result(y_true,y_pred=None,names=None):
     if((not y_pred) or (not names)):

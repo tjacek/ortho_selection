@@ -7,9 +7,10 @@ class Ensemble(object):
     def __init__(self,selection=None):
         self.selection=selection
 
-    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,out_path=None):
+    def __call__(self,in_path,binary=True,clf="LR",acc_only=False,
+                    out_path=None,cf_path=None):
         result=self.get_result(in_path,binary,clf,out_path)
-        return show_report(result,acc_only)
+        return show_report(result,acc_only,out_path=cf_path)
 
     def get_result(self,in_path,binary=True,clf="LR",out_path=None):
         datasets=self.selection(in_path)
@@ -55,13 +56,13 @@ def get_votes(datasets,binary,clf,out_path):
         votes=[learn.votes.as_binary(vote_i) for vote_i in votes]
     return votes
 
-def show_report(result,acc_only=False):
+def show_report(result,acc_only=False,out_path=None):
     if(acc_only):
         acc_i=learn.report.compute_score(result)
         return acc_i
     else:
         learn.report.show_result(result)
-        learn.report.show_confusion(result)
+        learn.report.show_confusion(result,out_path=out_path)
  
 def get_ensemble(selection=None):
     if(type(selection)==str):
@@ -82,11 +83,12 @@ def selection_decorator(selection):
 
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
-#    common_path="proj/MSR/common/stats/feats"
-#    deep_path=dir_path+"/ens/stats/feats"
-#    paths=(None,deep_path)
-#    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
-#    print(acc_i)
+    common_path="MHAD/common/stats/feats"
+    deep_path="MHAD/ens/basic/feats"
+    paths=(common_path,deep_path)
+    acc_i=ensemble(paths,clf="LR",out_path=None,binary=True,
+                    acc_only=False,cf_path="MHAD.mat")
+    print(acc_i)
 
 #    paths=["votes/maxz/LR/maxz_sim",
 #            "votes/base/SVC/stats_basic"]
