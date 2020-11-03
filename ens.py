@@ -80,25 +80,15 @@ def selection_decorator(selection):
 		return datasets
 	return selection_helper
 
-def binary_helper(i,data_i):
-    train_i=data_i.split()[0]
-    train_i.info=tools.person_cats(train_i.info)
-    binary_i=train_i#.binary(i)    
-    info=binary_i.mutual()
-#    print("%f,%f" % (np.mean(info),np.median(info)))
-    info=(info-np.mean(info))/np.std(info)
-    return selection.select_feats(data_i,
-            info,lambda x:x<1)
-
 if __name__=="__main__":
     ensemble=get_ensemble()#selection.complex_select)
-    common_path="proj/MSR/common/stats/feats"#"../ts_ensemble/corl/dtw"
-    dir_path="proj/MSR"
-    deep_path=dir_path+"/ens/stats/feats"
+#    common_path="proj/MSR/common/stats/feats"
+#    deep_path=dir_path+"/ens/stats/feats"
 #    paths=(None,deep_path)
 #    acc_i=ensemble(paths,clf="LR",out_path=None,binary=False)
 #    print(acc_i)
-    paths=["votes/maxz/LR/maxz_sim",
-            "votes/base/SVC/stats_basic"]
+
+#    paths=["votes/maxz/LR/maxz_sim",
+#            "votes/base/SVC/stats_basic"]
 #    mixed_ensemble(paths,False)
-    all_exp("votes/maxz","votes/base")
+#    all_exp("votes/maxz","votes/base")

@@ -57,4 +57,13 @@ def binary_selection(in_path):
         for i,data_i in enumerate(deep_data)]
     common=feats.read(common_path)[0]
     datasets=[ common+deep_i for deep_i in deep_data]
-    return datasets
+    return dataset
+
+def binary_helper(i,data_i):
+    train_i=data_i.split()[0]
+    train_i.info=tools.person_cats(train_i.info)
+    binary_i=train_i#.binary(i)    
+    info=binary_i.mutual()
+    info=(info-np.mean(info))/np.std(info)
+    return selection.select_feats(data_i,
+            info,lambda x:x<1)
