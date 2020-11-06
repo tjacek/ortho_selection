@@ -1,16 +1,29 @@
 import feats,files,tools
 from sklearn import manifold
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy as np,os
 
-def show_template(datasets,out_path,helpers):
+def recur_plots(in_path,out_path):
     files.make_dir(out_path)
-    for i,date_i in enumerate(datasets):
-        type_i= helpers(i)
-        out_i="%s/nn%d" % (out_path,i)
-        plot_i=tsne_plot(date_i,show=False,color_helper=type_i)  
-        plot_i.savefig(out_i,dpi=1000)
-        plot_i.close()
+    for root, dirs, paths in os.walk(in_path):
+        out_root= "/".join(root.split('/')[1:])
+        out_root="%s/%s" % (out_path,out_root)
+        files.make_dir(out_root)
+        for path_i in paths:
+            out_i="%s/%s"%(out_root,path_i)
+            in_i="%s/%s" % (root,path_i)
+            plot_i=tsne_plot(in_i,show=False)
+            plot_i.savefig(out_i,dpi=1000)
+            plot_i.close()
+
+#def show_template(datasets,out_path,helpers):
+#    files.make_dir(out_path)
+#    for i,date_i in enumerate(datasets):
+#        type_i= helpers(i)
+#        out_i="%s/nn%d" % (out_path,i)
+#        plot_i=tsne_plot(date_i,show=False,color_helper=type_i)  
+#        plot_i.savefig(out_i,dpi=1000)
+#        plot_i.close()
 
 def all_plots(common_path,deep_path,out_path=None,plot_type="cat"):
     datasets=tools.combined_dataset(common_path,deep_path)
@@ -81,7 +94,4 @@ def get_colors_helper(info,plot_type="cat"):
     return helper    
 
 if __name__ == "__main__":
-    common_path=None
-    deep_path='visual/sim'
-#    all_plots(common_path,deep_path,"visual/plots","cat")
-    split_plot('visual/sim/nn0')
+    recur_plots("feats","out")
