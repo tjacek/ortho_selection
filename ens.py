@@ -38,19 +38,22 @@ class CatEnsemble(object):
             y_true=votes[0][0]
             y_pred=learn.voting(votes,binary)
             result=[y_true,y_pred,votes[0][2]]
-            acc_i=show_report(result,acc_only=True)
-            acc.append(acc_i)
+            acc_i=show_report(result,acc_only=False)
+#            acc.append(acc_i)
         print(acc)
 
     def cat_dataset(self,dataset,subset_j):
         data_dict=dataset.to_dict()
-        def cond_helper(name_i):
+        new_cats={ cat_i:i  for i,cat_i in enumerate(subset_j)}
+        new_dict={}
+        for name_i,value_i in data_dict.items():
             cat_i=int(name_i.split("_")[0])-1
-            return (cat_i in subset_j)
-        data_dict={ name_i:value_i
-                for name_i,value_i in data_dict.items()
-                    if(cond_helper(name_i))}
-        return feats.from_dict(data_dict)
+            if(cat_i in subset_j):
+                postfix="_".join(name_i.split("_")[1:])
+                new_name_i="%d_%s" %(new_cats[cat_i]+1,postfix)
+                print(new_name_i)
+                new_dict[new_name_i]=value_i
+        return feats.from_dict(new_dict)
 
 def read_result(in_path,binary=False,acc=False):
     if(type(in_path)==list):
