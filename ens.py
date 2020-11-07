@@ -19,6 +19,39 @@ class Ensemble(object):
         y_pred=learn.voting(votes,binary)
         return [y_true,y_pred,votes[0][2]]  
 
+class CatEnsemble(object):
+    def __init__(self,subsets=None):
+        if(not subsets):
+            subsets=[[1,2,4,5,9,12,17,19],
+                     [0,3,6,7,8,10,13,11],
+                     [5,13,14,15,16,17,18,19]]
+        self.subsets=[set(subset_i) for subset_i in subsets]
+
+    def __call__(self,in_path,binary=True,clf="LR"):
+        dataset=tools.read_datasets(in_path)
+        cat_datasets=[[self.cat_dataset(data_j,subset_i)
+                        for data_j in dataset]
+                            for subset_i in self.subsets]
+        acc=[]
+        for cat_i in cat_datasets:
+            votes=get_votes(cat_i,binary,clf,None)
+            y_true=votes[0][0]
+            y_pred=learn.voting(votes,binary)
+            result=[y_true,y_pred,votes[0][2]]
+            acc_i=show_report(result,acc_only=True)
+            acc.append(acc_i)
+        print(acc)
+
+    def cat_dataset(self,dataset,subset_j):
+        data_dict=dataset.to_dict()
+        def cond_helper(name_i):
+            cat_i=int(name_i.split("_")[0])-1
+            return (cat_i in subset_j)
+        data_dict={ name_i:value_i
+                for name_i,value_i in data_dict.items()
+                    if(cond_helper(name_i))}
+        return feats.from_dict(data_dict)
+
 def read_result(in_path,binary=False,acc=False):
     if(type(in_path)==list):
         votes=[learn.votes.read_votes(path_i)
@@ -82,12 +115,11 @@ def selection_decorator(selection):
 	return selection_helper
 
 if __name__=="__main__":
-    ensemble=get_ensemble()#selection.complex_select)
-    common_path="MHAD/common/stats/feats"
-    deep_path="MHAD/ens/basic/feats"
+    ensemble=CatEnsemble()#get_ensemble()
+    common_path="feats/stats/feats"
+    deep_path="feats/basic/"
     paths=(common_path,deep_path)
-    acc_i=ensemble(paths,clf="LR",out_path=None,binary=True,
-                    acc_only=False,cf_path="MHAD.mat")
+    acc_i=ensemble(paths,clf="LR",binary=True)
     print(acc_i)
 
 #    paths=["votes/maxz/LR/maxz_sim",
