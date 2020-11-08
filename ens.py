@@ -27,7 +27,7 @@ class CatEnsemble(object):
                      [5,13,14,15,16,17,18,19]]
         self.subsets=[set(subset_i) for subset_i in subsets]
 
-    def __call__(self,in_path,binary=True,clf="LR"):
+    def __call__(self,in_path,binary=True,clf="LR",acc_only=False):
         dataset=tools.read_datasets(in_path)
         cat_datasets=[[self.cat_dataset(data_j,subset_i)
                         for data_j in dataset]
@@ -38,9 +38,12 @@ class CatEnsemble(object):
             y_true=votes[0][0]
             y_pred=learn.voting(votes,binary)
             result=[y_true,y_pred,votes[0][2]]
-            acc_i=show_report(result,acc_only=False)
-#            acc.append(acc_i)
-        print(acc)
+            acc_i=show_report(result,acc_only=acc_only)
+            if(acc_only):
+                acc.append(float(acc_i.split(",")[0]))
+        if(acc_only):
+            mean_acc=np.mean(acc)
+            return acc,mean_acc
 
     def cat_dataset(self,dataset,subset_j):
         data_dict=dataset.to_dict()
@@ -122,7 +125,7 @@ if __name__=="__main__":
     common_path="feats/stats/feats"
     deep_path="feats/basic/"
     paths=(common_path,deep_path)
-    acc_i=ensemble(paths,clf="LR",binary=True)
+    acc_i=ensemble(paths,clf="LR",binary=True,acc_only=False)
     print(acc_i)
 
 #    paths=["votes/maxz/LR/maxz_sim",
