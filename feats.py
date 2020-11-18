@@ -71,6 +71,13 @@ class FeatureSet(object):
         file_str.write(feat_txt)
         file_str.close()
 
+    def by_cat(self):
+        cats=[[]for i in range(self.n_cats())]
+        for info_i in self.info:
+            cat_i=int(info_i.split('_')[0])-1
+            cats[cat_i].append(info_i)
+        return cats
+
 def read(in_path):
     if(type(in_path)==list):
         return [read_unified(in_path)]
