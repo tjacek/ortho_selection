@@ -7,6 +7,7 @@ class Clusters(object):
 		self.cats = cats
 
 	def quality(self):
+		qual=[]
 		centroids=self.get_centroids()
 		vectors=self.get_vectors()
 		for i,centroid_i in enumerate(centroids):
@@ -17,8 +18,8 @@ class Clusters(object):
 			out_i=files.flatten(out_i)
 			in_distance=np.mean(distance(centroid_i,in_i))
 			out_distance=np.mean(distance(centroid_i,out_i))
-			print(i)
-			print(in_distance/out_distance)
+			qual.append(in_distance/out_distance)
+		return np.array(qual)
 
 	def get_centroids(self):
 		centroids=[]
@@ -41,10 +42,23 @@ def make_clusters(dataset):
 	dataset=dataset.to_dict()	
 	return Clusters(dataset,cats)
 
+def exp(common_path,deep_path):
+	common=feats.read(common_path)[0]
+	common=make_clusters(common.split()[0])
+	binary=[make_clusters(binary_i.split()[0]) 
+				for binary_i in feats.read(deep_path)]
+	print("Common:")
+	base_quality=common.quality()
+	print(base_quality)
+	print("Binary:")
+	for i,binary_i in enumerate(binary):
+		print(i)
+		print( (binary_i.quality() -base_quality)>0)
+
 def separ(in_path):
 	dataset= feats.read(in_path)[0]
 	train,test=dataset.split()
-	clusters=make_clusters(train)
-	clusters.quality()
+	clusters=make_clusters(test)
+	print(clusters.quality())
 
-separ("feats/stats/feats")
+exp("feats/stats/feats","feats/basic")
