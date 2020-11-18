@@ -43,6 +43,9 @@ def clean_str(name_i):
 def iter_product(args):
     return list(itertools.product(*args))
 
+def flatten(args):
+    return list(itertools.chain(*args))
+
 def ens_template(in_path,out_path,fun):
     make_dir(out_path)
     for path_i in top_files(in_path):
