@@ -10,6 +10,7 @@ class Selection(object):
 
     def __call__(self,in_path):
         quality=self.quality_metric(in_path)
+        quality=(quality-np.mean(quality))/np.std(quality)
         return selection_template(in_path,quality,self.cond)
 
 def selection_template(in_path,acc,cond):
@@ -24,19 +25,20 @@ def selection_template(in_path,acc,cond):
 
 def get_selection(selection_type):
     if(selection_type=="person"):
-        return person_selection
+        return Selection(person_quality,lambda x:x>-1)
     return Selection(simple_quality,lambda x:x>1)
 
-def person_selection(in_path):
+def person_quality(in_path):
     deep_only=(None,in_path[1])
     datasets=tools.read_datasets(deep_only)
     acc=[pred_person(data_i) for data_i in datasets]
     acc=np.array(acc)
     print(acc)
-    acc=(acc-np.mean(acc))/np.std(acc)
-    print(acc)
-    cond=lambda x:x>-1
-    return selection_template(in_path,acc,cond)
+#    acc=(acc-np.mean(acc))/np.std(acc)
+    return acc
+#    print(acc)
+#    cond=lambda x:x>-1
+#    return selection_template(in_path,acc,cond)
 
 def pred_person(data_i):
     train,test=data_i.split()
@@ -57,7 +59,7 @@ def simple_quality(in_path):
     datasets=tools.read_datasets(in_path)
     acc=cross_acc(datasets)
     acc=np.array(acc)
-    acc= (acc-np.mean(acc))/np.std(acc)
+#    acc= (acc-np.mean(acc))/np.std(acc)
     return acc
 #    cond=lambda x:x>1
 #    return selection_template(in_path,acc,cond)
@@ -73,10 +75,10 @@ def cross_acc(datasets):
     return acc
 
 if __name__=="__main__":
-    common_path=["feats/third/simple/feats",
-                 "feats/third/agum/feats"]
+    common_path=["feats/third/simple/feats"]
+#                 "feats/third/agum/feats"]
     deep_path="feats/third/basic/"
     paths=(common_path,deep_path)
-    ensemble=ens.get_ensemble("simple")
+    ensemble=ens.get_ensemble("person")
     acc_i=ensemble(paths,clf="LR",binary=False,acc_only=False)
     print(acc_i)
