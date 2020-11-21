@@ -1,12 +1,31 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-import feats,learn,tools
+import feats,learn,tools,ens
+
+class Selection(object):
+    def __init__(self,quality_metric,cond):
+        self.quality_metric=quality_metric
+        self.cond=cond
+
+    def __call__(self,in_path):
+        quality=self.quality_metric(in_path)
+        return selection_template(in_path,quality,self.cond)
+
+def selection_template(in_path,acc,cond):
+    datasets=tools.read_datasets(in_path)
+    s_datasets=[data_i 
+             for i,data_i in enumerate(datasets)
+                if(cond(acc[i]))]
+    if(len(s_datasets)!=0):
+        datasets=s_datasets
+    print("n_clf %d" % len(datasets))
+    return datasets
 
 def get_selection(selection_type):
     if(selection_type=="person"):
         return person_selection
-    return simple_selection
+    return Selection(simple_quality,lambda x:x>1)
 
 def person_selection(in_path):
     deep_only=(None,in_path[1])
@@ -18,16 +37,6 @@ def person_selection(in_path):
     print(acc)
     cond=lambda x:x>-1
     return selection_template(in_path,acc,cond)
-
-def selection_template(in_path,acc,cond):
-    datasets=tools.read_datasets(in_path)
-    s_datasets=[data_i 
-             for i,data_i in enumerate(datasets)
-                if(cond(acc[i]))]
-    if(len(s_datasets)!=0):
-        datasets=s_datasets
-    print("n_clf %d" % len(datasets))
-    return datasets
 
 def pred_person(data_i):
     train,test=data_i.split()
@@ -44,14 +53,14 @@ def person_train(data_i):
     y_pred=model.predict(data_i.X)
     return accuracy_score(y_true,y_pred)
 
-def simple_selection(in_path):
+def simple_quality(in_path):
     datasets=tools.read_datasets(in_path)
     acc=cross_acc(datasets)
     acc=np.array(acc)
     acc= (acc-np.mean(acc))/np.std(acc)
-    print(acc)
-    cond=lambda x:x>0
-    return selection_template(in_path,acc,cond)
+    return acc
+#    cond=lambda x:x>1
+#    return selection_template(in_path,acc,cond)
 
 def cross_acc(datasets):
     datasets=[data_i.split()[0] for data_i in datasets]
@@ -64,4 +73,10 @@ def cross_acc(datasets):
     return acc
 
 if __name__=="__main__":
-    paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
+    common_path=["feats/third/simple/feats",
+                 "feats/third/agum/feats"]
+    deep_path="feats/third/basic/"
+    paths=(common_path,deep_path)
+    ensemble=ens.get_ensemble("simple")
+    acc_i=ensemble(paths,clf="LR",binary=False,acc_only=False)
+    print(acc_i)
