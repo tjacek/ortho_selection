@@ -1,17 +1,22 @@
 import numpy as np,random
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
-#import tools,clf,learn.report,learn
-import ens,learn
+import ens,learn,clf
 
-def make_curve(in_path,binary=False):
+def get_ordering(in_path):
+    quality=clf.simple_quality(in_path)
+    return np.argsort(quality)
+
+def make_curve(in_path,binary=False,order=None):
     votes=ens.get_votes(None,None,None,in_path)
-    preds=[ learn.voting([vote_i],binary) 
-            for vote_i in votes]
+    y_true=votes[0][0]
+    if(not order is None):
+        votes=[votes[k] for k in order]
+    preds=[ learn.voting(votes[:i+1],binary) 
+            for i,vote_i in enumerate(votes)]
     y_true=votes[0][0]
     acc=[accuracy_score(y_true,pred_i) for pred_i in preds]
-    print(acc)
-#    show_curve(acc)
+    show_curve(acc)
 
 def show_curve(acc,name="acc_curve",out_path=None):
     plt.title(name)
@@ -39,6 +44,9 @@ def random_ens(in_path,size=None,k=200,clf="LR"):
     acc=np.array([helper(size) for i in range(k)])
     print("%.4f,%.4f,%.4f" % (np.mean(acc),np.median(acc),np.amax(acc)))
 
-paths=("../outliners/common/stats/feats","../outliners/ens/sim/feats")
+paths=(["feats/third/agum","feats/third/simple"],"feats/third/basic")
+
 #random_ens(paths)
-make_curve("votes/third")
+order= get_ordering(paths)
+print(order)
+make_curve("votes/third",order=order)
