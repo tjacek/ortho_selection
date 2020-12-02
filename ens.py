@@ -80,17 +80,30 @@ def all_exp(in1,in2):
     paths2=files.flatten(paths2)   
     for path_i in paths1:
         for path_j in paths2:
-            print(path_i)
-            print(path_j)
-            print(read_result([path_i,path_j],binary=False,acc=True))
+            acc_i=read_result([path_i,path_j],binary=False,acc=True)
+            format_result([path_i,path_j],acc_i)
+#            print(path_i)
+#            print(path_j)
+#            print(read_result([path_i,path_j],binary=False,acc=True))
 
 def one_exp(in_path):
     paths=[files.top_files(path_i) 
             for path_i in files.top_files(in_path)]
     paths=files.flatten(paths)
     for path_i in paths:
-        print(path_i)
-        print(read_result(path_i,binary=False,acc=True))
+        acc_i=read_result(path_i,binary=False,acc=True)        
+        format_result(path_i,acc_i)
+
+def format_result(path_i,acc_i):
+    if(type(path_i)==list):
+        paths=[path_j.split("/")[-2:] 
+                for path_j in path_i]
+        paths=files.flatten(paths)
+    else:
+        paths=path_i.split("/")[-2:]
+    paths=",".join(paths)
+    paths=paths.replace("_",",")
+    print("%s,%s"%(paths,acc_i))
 
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
@@ -138,5 +151,5 @@ if __name__=="__main__":
     paths=["votes/maxz/LR/maxz_sim",
             "votes/base/SVC/stats_basic"]
 #    read_result(paths[0],False)
-#    all_exp("votes/maxz","votes/base")
-    one_exp("votes/base")
+    all_exp("votes/maxz","votes/base")
+#    one_exp("votes/maxz")
