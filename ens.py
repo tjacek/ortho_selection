@@ -73,7 +73,7 @@ def read_result(in_path,binary=False,acc=False):
         return result
     return show_report( result,acc)
 
-def all_exp(in1,in2):
+def all_exp(in1,in2,threshold=0.92):
     paths1=[files.top_files(path_i) for path_i in files.top_files(in1)]
     paths1=files.flatten(paths1)
     paths2=[files.top_files(path_i) for path_i in files.top_files(in2)]
@@ -81,10 +81,8 @@ def all_exp(in1,in2):
     for path_i in paths1:
         for path_j in paths2:
             acc_i=read_result([path_i,path_j],binary=False,acc=True)
-            format_result([path_i,path_j],acc_i)
-#            print(path_i)
-#            print(path_j)
-#            print(read_result([path_i,path_j],binary=False,acc=True))
+            if(float(acc_i.split(",")[0])>threshold):
+                format_result([path_i,path_j],acc_i)
 
 def one_exp(in_path):
     paths=[files.top_files(path_i) 
@@ -152,4 +150,4 @@ if __name__=="__main__":
             "votes/base/SVC/stats_basic"]
 #    read_result(paths[0],False)
     all_exp("votes/maxz","votes/base")
-#    one_exp("votes/maxz")
+#    one_exp("votes/base")
