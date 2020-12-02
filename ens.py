@@ -62,7 +62,7 @@ def read_result(in_path,binary=False,acc=False):
     if(type(in_path)==list):
         votes=[learn.votes.read_votes(path_i)
             for path_i in in_path]
-        votes=files.flatten_list(votes)
+        votes=files.flatten(votes)
     else:
         votes=learn.votes.read_votes(in_path)
     if(binary):
@@ -75,14 +75,22 @@ def read_result(in_path,binary=False,acc=False):
 
 def all_exp(in1,in2):
     paths1=[files.top_files(path_i) for path_i in files.top_files(in1)]
-    paths1=files.flatten_list(paths1)
+    paths1=files.flatten(paths1)
     paths2=[files.top_files(path_i) for path_i in files.top_files(in2)]
-    paths2=files.flatten_list(paths2)   
+    paths2=files.flatten(paths2)   
     for path_i in paths1:
         for path_j in paths2:
             print(path_i)
             print(path_j)
             print(read_result([path_i,path_j],binary=False,acc=True))
+
+def one_exp(in_path):
+    paths=[files.top_files(path_i) 
+            for path_i in files.top_files(in_path)]
+    paths=files.flatten(paths)
+    for path_i in paths:
+        print(path_i)
+        print(read_result(path_i,binary=False,acc=True))
 
 def get_votes(datasets,binary,clf,out_path):
     if(out_path and os.path.isdir(out_path)):
@@ -121,14 +129,14 @@ def selection_decorator(selection):
 	return selection_helper
 
 if __name__=="__main__":
-    ensemble=CatEnsemble()#get_ensemble()
-    common_path="feats/stats/feats"
-    deep_path="feats/basic/"
-    paths=(common_path,deep_path)
-    acc_i=ensemble(paths,clf="LR",binary=True,acc_only=False)
-    print(acc_i)
-
-#    paths=["votes/maxz/LR/maxz_sim",
-#            "votes/base/SVC/stats_basic"]
-#    mixed_ensemble(paths,False)
+#    ensemble=get_ensemble()
+#    common_path="feats/stats/feats"
+#    deep_path="feats/basic/"
+#    paths=(common_path,deep_path)
+#    acc_i=ensemble(paths,clf="LR",binary=True,acc_only=False)
+#    print(acc_i)
+    paths=["votes/maxz/LR/maxz_sim",
+            "votes/base/SVC/stats_basic"]
+#    read_result(paths[0],False)
 #    all_exp("votes/maxz","votes/base")
+    one_exp("votes/base")
